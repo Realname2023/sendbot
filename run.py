@@ -9,12 +9,12 @@ async def on_startup(_):
     import middlewares
     middlewares.setup(dp)
     print('Бот вышел в онлайн')
-    print('Connecting to POSTGRESQL')
-    await db_startup(dp)
-    # print('Очистка таблиц')
-    # await db.gino.drop_all()
-    print('Сшздание таблиц')
-    await db.gino.create_all()
+    # print('Connecting to POSTGRESQL')
+    # await db_startup(dp)
+    # # print('Очистка таблиц')
+    # # await db.gino.drop_all()
+    # print('Сшздание таблиц')
+    # await db.gino.create_all()
     print('Готово')
 
 
