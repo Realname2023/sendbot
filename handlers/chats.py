@@ -17,35 +17,36 @@ all_commands = ['/отмена', '/start', '/stop', '/Закрыть_чат', '/
 #     await call.answer(text='Ответ на заявку отправлен', show_alert=True)
 #
 # #
-# @dp.message_handler(lambda message: message.from_user.id != operator and message.text not in all_commands,
-#                     content_types=ContentTypes.ANY)
-# async def forward_message2(message: types.Message):
-#     sender_id = message.from_user.id
-#     # print(sender_id, message.chat.id, message.from_user.full_name)
-#     name = message.from_user.full_name
-#     if message.photo:
-#         await bot.send_photo(sender_id, photo=message.photo[-1].file_id,
-#                              caption=message.photo[-1].file_id)
-#         # await message.answer(message.photo[-1].file_id)
-#     elif message.voice:
-#         await bot.send_voice(operator, voice=message.voice.file_id,
-#                              caption=f'{name}')
-#     elif message.audio:
-#         await bot.send_audio(operator, audio=message.audio.file_id,
-#                              caption=f'{name}')
-#     elif message.document:
-#         await bot.send_document(operator, document=message.document.file_id,
-#                                 caption=f'{name}')
-#     elif message.video:
-#         await bot.send_video(operator, video=message.video.file_id,
-#                              caption=f'{name}')
-#     elif message.contact:
-#         await bot.send_contact(operator, message.contact.phone_number, message.contact.first_name)
-#     elif message.sticker:
-#         await bot.send_sticker(operator, sticker=message.sticker.file_id)
-#     else:
-#         await bot.send_message(operator,
-#                                text=f"Пользователь {name} написал: {message.text}")
+@dp.message_handler(lambda message: message.from_user.id != operator and message.text not in all_commands,
+                    content_types=ContentTypes.ANY)
+async def forward_message2(message: types.Message):
+    sender_id = message.from_user.id
+    # print(sender_id, message.chat.id, message.from_user.full_name)
+    name = message.from_user.full_name
+    if message.photo:
+        await bot.send_photo(operator, photo=message.photo[-1].file_id)
+        await bot.send_photo(sender_id, photo=message.photo[-1].file_id,
+                             caption=message.photo[-1].file_id)
+        # await message.answer(message.photo[-1].file_id)
+    elif message.voice:
+        await bot.send_voice(operator, voice=message.voice.file_id,
+                             caption=f'{name}')
+    elif message.audio:
+        await bot.send_audio(operator, audio=message.audio.file_id,
+                             caption=f'{name}')
+    elif message.document:
+        await bot.send_document(operator, document=message.document.file_id,
+                                caption=f'{name}')
+    elif message.video:
+        await bot.send_video(operator, video=message.video.file_id,
+                             caption=f'{name}')
+    elif message.contact:
+        await bot.send_contact(operator, message.contact.phone_number, message.contact.first_name)
+    elif message.sticker:
+        await bot.send_sticker(operator, sticker=message.sticker.file_id)
+    else:
+        await bot.send_message(operator,
+                               text=f"Пользователь {name} написал: {message.text}")
         # print(message.chat.id)
     # else:
     #     user_id = sender_id + 1
