@@ -8,8 +8,8 @@ load_dotenv()
 
 storage=MemoryStorage()
 
-# TOKEN = str(os.getenv("TOKEN"))
-TOKEN = '6684662073:AAGw6gZtBmQ0QWpoRnvoyAsZeswyDUQipnw'
+TOKEN = str(os.getenv("TOKEN"))
+# TOKEN = '6684662073:AAGw6gZtBmQ0QWpoRnvoyAsZeswyDUQipnw'
 
 URL_APP = 'https://deplbot-a5f641a62530.herokuapp.com/'
 
