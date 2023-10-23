@@ -15,8 +15,8 @@ all_commands = ['/отмена', '/start', '/stop', '/Закрыть_чат', '/
 #     # await commands.add_active_user(user)
 #     await bot.send_message(user, text='Здлавствуйте с Вами скоро свяжуться')
 #     await call.answer(text='Ответ на заявку отправлен', show_alert=True)
-#
-# #
+
+
 @dp.message_handler(lambda message: message.from_user.id != operator and message.text not in all_commands,
                     content_types=ContentTypes.ANY)
 async def forward_message2(message: types.Message):
