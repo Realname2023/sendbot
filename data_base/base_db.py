@@ -62,8 +62,9 @@ class Oredrs(TimedBaseModel):
 
 class CurrentOrder(TimedBaseModel):
     __tablename__ = 'current_orders'
-    user_id = Column(BigInteger, primary_key=True)
-    item_id = Column(String(100), primary_key=True)
+    user_item = Column(String(100), primary_key=True)
+    user_id = Column(BigInteger)
+    item_id = Column(String(100))
     name = Column(String(100))
     unit = Column(String(100))
     price = Column(BigInteger)

@@ -61,6 +61,7 @@ async def load_quantity(message: types.Message, state: FSMContext):
     else:
         data = await state.get_data()
         item_id = data.get("buy_item_id")
+        user_item = str(user_id) + item_id
         name = data.get('item')
         price = data.get('buy_price')
         quantity = int(data.get('buy_quantity'))
@@ -68,9 +69,9 @@ async def load_quantity(message: types.Message, state: FSMContext):
         sum = price * quantity
         city = data.get("city")
         comment = ''
-        await commands.add_current_order(user_id, item_id, name, unit, price, quantity, sum, city, comment)
+        await commands.add_current_order(user_item, user_id, item_id, name, unit, price, quantity, sum, city, comment)
         await state.finish()
-        await create_order(user_id, message)
+        await create_order(user_id)
 
 
 @dp.message_handler(state=FSMClient.org_name)
@@ -101,6 +102,7 @@ async def indicate_phone(message: types.Message, state: FSMContext):
                     phone=phone)
     await client.create()
     item_id = data.get("buy_item_id")
+    user_item = str(user_id) + item_id
     name = data.get('item')
     price = data.get('buy_price')
     quantity = int(data.get('buy_quantity'))
@@ -108,5 +110,5 @@ async def indicate_phone(message: types.Message, state: FSMContext):
     sum = price * quantity
     comment = ''
     await state.finish()
-    await commands.add_current_order(user_id, item_id, name, unit, price, quantity, sum, city, comment)
-    await create_order(user_id, message)
+    await commands.add_current_order(user_item, user_id, item_id, name, unit, price, quantity, sum, city, comment)
+    await create_order(user_id)

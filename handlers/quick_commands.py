@@ -76,14 +76,14 @@ async def select_client(user_id):
     return client
 
 
-async def add_current_order(user_id, item_id, name, unit, price, quantity, sum, city, comment = ''):
+async def add_current_order(user_item, user_id, item_id, name, unit, price, quantity, sum, city, comment = ''):
     try:
-        current_order = CurrentOrder(user_id=user_id, item_id=item_id, name=name,
+        current_order = CurrentOrder(user_item=user_item, user_id=user_id, item_id=item_id, name=name,
                                      unit=unit, price=price, quantity=quantity, sum=sum, city=city,
                                      comment=comment)
         await current_order.create()
     except UniqueViolationError:
-        current_order = await CurrentOrder.query.where(CurrentOrder.user_id==user_id and CurrentOrder.item_id==item_id).gino.first()
+        current_order = await CurrentOrder.query.where(CurrentOrder.user_item==user_item).gino.first()
         sum2 = current_order.sum + sum
         quantity2 = current_order.quantity + quantity
         await current_order.update(quantity=quantity2, sum=sum2).apply()
@@ -94,20 +94,20 @@ async def select_current_orders(user_id):
     return current_orders
 
 
-async def select_current_order(user_id, item_id):
-    current_order = await CurrentOrder.query.where(CurrentOrder.user_id == user_id and CurrentOrder.item_id == item_id).gino.first()
+async def select_current_order(user_item):
+    current_order = await CurrentOrder.query.where(CurrentOrder.user_item == user_item).gino.first()
     return current_order
 
 
-async def delete_item_cur_order(user_id, item_id):
-    current_order = await CurrentOrder.query.where(
-        CurrentOrder.user_id == user_id and CurrentOrder.item_id == item_id).gino.first()
-    await current_order.delete()
+# async def delete_item_cur_order(user_id, item_id):
+#     current_order = await CurrentOrder.query.where(
+#         CurrentOrder.user_id == user_id and CurrentOrder.item_id == item_id).gino.first()
+#     await current_order.delete()
 
 
-async def change_quantity_cur_order(user_id, item_id, new_quahtity, new_sum):
+async def change_quantity_cur_order(user_item, new_quahtity, new_sum):
     current_order = await CurrentOrder.query.where(
-        CurrentOrder.user_id == user_id and CurrentOrder.item_id == item_id).gino.first()
+        CurrentOrder.user_item == user_item).gino.first()
     await current_order.update(quantity=new_quahtity, sum=new_sum).apply()
 
 
