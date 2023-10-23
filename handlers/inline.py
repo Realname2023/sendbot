@@ -18,7 +18,7 @@ async def select_wire_accessories(call: types.CallbackQuery, callback_data: dict
                                    text='Наше предложение')
             if ret.del_price == None:
                 await bot.send_photo(call.from_user.id, ret.photo,
-                                     f'<b>{ret.name}</b>\nХарактеристики: {ret.description}\nСклад: {ret.city} '
+                                     f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
                                      f'\nЦена {ret.price} за {ret.unit} тенге',
                                      parse_mode=types.ParseMode.HTML,
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
