@@ -38,6 +38,14 @@ async def callback_buy(call: types.CallbackQuery, callback_data: dict, state: FS
     await FSMClient.buy_quantity.set()
     await state.update_data(buy_item_id=item_id)
     await state.update_data(item=item)
+    if price == read.del_price:
+        await state.update_data(buy_del_price=price)
+        await state.update_data(buy_price=read.price)
+        await state.update_data(delivery=1)
+    else:
+        await state.update_data(buy_price=price)
+        await state.update_data(buy_del_price=read.del_price)
+        await state.update_data(delivery=0)
     await state.update_data(buy_price=price)
     await state.update_data(buy_unit=unit)
     await state.update_data(city=city)
@@ -64,12 +72,23 @@ async def load_quantity(message: types.Message, state: FSMContext):
         user_item = str(user_id) + item_id
         name = data.get('item')
         price = data.get('buy_price')
-        quantity = int(data.get('buy_quantity'))
+        del_price = data.get('buy_del_price')
+        quant = int(data.get('buy_quantity'))
         unit = data.get("buy_unit")
-        sum = price * quantity
+        delivery = data.get("delivery")
+        del_quantity = 0
+        quantity = 0
+        if delivery == 1:
+            del_quantity = quant
+            sum = del_price * quant
+        else:
+            quantity = quant
+            sum = price * quant
         city = data.get("city")
         comment = ''
-        await commands.add_current_order(user_item, user_id, item_id, name, unit, price, quantity, sum, city, comment)
+        await commands.add_current_order(user_item, user_id, item_id, name, unit,
+                                         price, del_price, quantity, del_quantity,
+                                         sum, city, comment)
         await state.finish()
         await create_order(user_id)
 
@@ -105,10 +124,22 @@ async def indicate_phone(message: types.Message, state: FSMContext):
     user_item = str(user_id) + item_id
     name = data.get('item')
     price = data.get('buy_price')
-    quantity = int(data.get('buy_quantity'))
+    del_price = data.get('buy_del_price')
+    quant = int(data.get('buy_quantity'))
     unit = data.get("buy_unit")
-    sum = price * quantity
+    delivery = data.get("delivery")
+    del_quantity = 0
+    quantity = 0
+    if delivery == 1:
+        del_quantity = quant
+        sum = del_price * quant
+    else:
+        quantity = quant
+        sum = price * quant
+    city = data.get("city")
     comment = ''
+    await commands.add_current_order(user_item, user_id, item_id, name, unit,
+                                     price, del_price, quantity, del_quantity,
+                                     sum, city, comment)
     await state.finish()
-    await commands.add_current_order(user_item, user_id, item_id, name, unit, price, quantity, sum, city, comment)
     await create_order(user_id)

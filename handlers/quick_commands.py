@@ -76,17 +76,22 @@ async def select_client(user_id):
     return client
 
 
-async def add_current_order(user_item, user_id, item_id, name, unit, price, quantity, sum, city, comment = ''):
+async def add_current_order(user_item, user_id, item_id, name, unit,
+                            price, del_price, quantity, del_quantity, sum,
+                            city, comment=''):
     try:
         current_order = CurrentOrder(user_item=user_item, user_id=user_id, item_id=item_id, name=name,
-                                     unit=unit, price=price, quantity=quantity, sum=sum, city=city,
-                                     comment=comment)
+                                     unit=unit, price=price, del_price=del_price,
+                                     quantity=quantity, del_quantity=del_quantity,
+                                     sum=sum, city=city, comment=comment)
         await current_order.create()
     except UniqueViolationError:
         current_order = await CurrentOrder.query.where(CurrentOrder.user_item==user_item).gino.first()
         sum2 = current_order.sum + sum
         quantity2 = current_order.quantity + quantity
-        await current_order.update(quantity=quantity2, sum=sum2).apply()
+        del_quantity2 = current_order.del_quantity + del_quantity
+        await current_order.update(quantity=quantity2, del_quantity=del_quantity2,
+                                   sum=sum2).apply()
 
 
 async def select_current_orders(user_id):

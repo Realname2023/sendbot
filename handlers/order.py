@@ -26,7 +26,14 @@ async def create_order(user_id):
         strpos = ""
         comment = ""
         for ret in cur_orders:
-            pos = f'{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n'
+            if ret.del_quantity == 0:
+                pos = f'{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n'
+            elif ret.quantity == 0:
+                pos = f'{ret.name}\n в количестве {ret.del_quantity} {ret.unit} с доставкой\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n'
+            else:
+                pos = f'{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n' \
+                      f'в количестве {ret.del_quantity} {ret.unit} с доставкой\n по цене {ret.del_price} тенге\n' \
+                      f' на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n'
             strpos = strpos + pos
             asum = asum + ret.sum
             comment = comment + ret.comment

@@ -35,6 +35,8 @@ class FSMClient(StatesGroup):
     buy_item_id = State()
     item = State()
     buy_price = State()
+    buy_del_price = State()
+    delivery = State()
     buy_quantity = State()
     buy_unit = State()
     city = State()
