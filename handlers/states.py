@@ -1,7 +1,7 @@
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.utils.callback_data import CallbackData
 
-new_quantity = CallbackData("new_quantity", "item_id", "price")
+new_quantity = CallbackData("new_quantity", "user_item", "delivery")
 del_item = CallbackData("del_item", "item_id")
 client_order = CallbackData("get_order", "user_id")
 buy_item = CallbackData("buy", "item_id", "price")
@@ -51,3 +51,4 @@ class FSMOrder(StatesGroup):
     new_quantity = State()
     order_item_id = State()
     order_price = State()
+    order_delivery = State()

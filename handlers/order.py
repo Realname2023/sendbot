@@ -4,7 +4,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeybo
 from create_bot import bot, dp, operator
 from handlers.states import select_city, get_order, FSMClient, FSMOrder, del_item, new_quantity
 from handlers import quick_commands as commands
-from keyboards import kb_client, buying_kb, cancel_buy_kb, order_kb
+from keyboards import kb_client, buying_kb, cancel_buy_kb, order_kb, cancel_change_kb
 import time
 
 
@@ -46,7 +46,17 @@ async def create_order(user_id):
                              reply_markup=order_kb)
 
 
-
+@dp.message_handler(state="*", commands=['отменить'])
+async def cancel_handier(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    current_state = await state.get_state()
+    if current_state is None:
+        await message.answer('Ok', reply_markup=ReplyKeyboardRemove())
+        await create_order(user_id)
+        return
+    await state.finish()
+    await message.answer('Ok', reply_markup=ReplyKeyboardRemove())
+    await create_order(user_id)
 
 
 @dp.callback_query_handler(text='order')
@@ -89,23 +99,6 @@ async def order(call: types.CallbackQuery):
     await call.answer('Add')
 
 
-@dp.callback_query_handler(text='comment')
-async def comment_user(call: types.CallbackQuery):
-    await call.message.edit_reply_markup()
-    await call.message.answer('Напишите комментарий')
-    await FSMOrder.comment.set()
-    await call.answer('comment')
-
-
-@dp.message_handler(state=FSMOrder.comment)
-async def set_comment(message: types.Message, state: FSMContext):
-    user_id = message.from_user.id
-    comment = message.text
-    await commands.set_comment(user_id, comment)
-    await create_order(user_id)
-    await state.reset_state()
-
-
 @dp.callback_query_handler(text='delitem')
 async def delete_item_button(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
@@ -140,8 +133,15 @@ async def change_quantity(call: types.CallbackQuery):
     cur_orders = await commands.select_current_orders(user_id)
     keyboard = InlineKeyboardMarkup(row_width=1)
     for ret in cur_orders:
-        keyboard.insert(InlineKeyboardButton(ret.name,
-                                             callback_data=new_quantity.new(item_id=ret.user_item, price=ret.price)))
+        if ret.del_quantity == 0:
+            keyboard.insert(InlineKeyboardButton(ret.name,
+                                             callback_data=new_quantity.new(user_item=ret.user_item, delivery=0)))
+        elif ret.quantity == 0:
+            keyboard.insert(InlineKeyboardButton(ret.name,
+                                                 callback_data=new_quantity.new(user_item=ret.user_item, delivery=1)))
+        else:
+            keyboard.insert(InlineKeyboardButton(ret.name,
+                                                 callback_data=new_quantity.new(user_item=ret.user_item, delivery=2)))
     keyboard.add(InlineKeyboardButton('Назад', callback_data='myorders'))
     await call.message.answer('Выберите товар количество которого вы хотите изменить ',
                               reply_markup=keyboard)
@@ -152,14 +152,35 @@ async def change_quantity(call: types.CallbackQuery):
 async def callback_new_quantity(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
-    user_item = callback_data.get("item_id")
+    user_item = callback_data.get("user_item")
+    delivery = callback_data.get("delivery")
     item = await commands.select_current_order(user_item)
-    price = callback_data.get("price")
-    await call.answer(text=f'Укажите новое количество {item.name}.', show_alert=True)
-    await bot.send_message(user_id, text=f"Укажите новое количество {item.name}")
-    await FSMOrder.new_quantity.set()
-    await state.update_data(order_item_id=user_item)
-    await state.update_data(order_price=price)
+    if int(delivery) == 0:
+        await state.update_data(order_delivery=0)
+        await state.update_data(order_price=item.price)
+        await call.answer(text=f'Укажите новое количество {item.name}.', show_alert=True)
+        await bot.send_message(user_id, text=f"Укажите новое количество {item.name}",
+                               reply_markup=cancel_change_kb)
+        await FSMOrder.new_quantity.set()
+        await state.update_data(order_item_id=user_item)
+    elif int(delivery) == 1:
+        await state.update_data(order_delivery=1)
+        await state.update_data(order_price=item.del_price)
+        await call.answer(text=f'Укажите новое количество {item.name}.', show_alert=True)
+        await bot.send_message(user_id, text=f"Укажите новое количество {item.name}",
+                               reply_markup=cancel_change_kb)
+        await FSMOrder.new_quantity.set()
+        await state.update_data(order_item_id=user_item)
+    else:
+        await call.message.answer(f'В вашем заказе есть {item.name} c доставкой и без доставки',
+                                  reply_markup=InlineKeyboardMarkup(row_width=2, inline_keyboard=[
+                                      [InlineKeyboardButton(item.name,
+                                                            callback_data=new_quantity.new(user_item=item.user_item, delivery=0)),
+                                       InlineKeyboardButton(f'{item.name} с доставкой',
+                                                            callback_data=new_quantity.new(user_item=item.user_item, delivery=1))],
+                                      [InlineKeyboardButton('Назад', callback_data='myorders')]
+                                  ]))
+        await call.answer("Choose")
 
 
 @dp.message_handler(state=FSMOrder.new_quantity)
@@ -175,12 +196,31 @@ async def load_new_quantity(message: types.Message, state: FSMContext):
     data = await state.get_data()
     new_quantity = int(data.get('new_quantity'))
     user_item = data.get('order_item_id')
+    delivery = data.get("order_delivery")
+    print(delivery)
     price = int(data.get('order_price'))
     new_sum = new_quantity*price
-    await commands.change_quantity_cur_order(user_item, new_quantity, new_sum)
-    await message.answer(f'Количество товара успешно изменено')
+    await commands.change_quantity_cur_order(user_item, new_quantity, new_sum, delivery)
+    await message.answer('Количество товара успешно изменено', reply_markup=ReplyKeyboardRemove())
     await state.finish()
     await create_order(user_id)
+
+
+@dp.callback_query_handler(text='comment')
+async def comment_user(call: types.CallbackQuery):
+    await call.message.edit_reply_markup()
+    await call.message.answer('Напишите комментарий')
+    await FSMOrder.comment.set()
+    await call.answer('comment')
+
+
+@dp.message_handler(state=FSMOrder.comment)
+async def set_comment(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    comment = message.text
+    await commands.set_comment(user_id, comment)
+    await create_order(user_id)
+    await state.reset_state()
 
 
 @dp.callback_query_handler(text='delall')

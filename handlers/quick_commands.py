@@ -17,9 +17,6 @@ async def select_all_users():
     all_users = await User.query.gino.all()
     return all_users
 
-# async def count_users():
-#     count = await db.func.count(User.user_id).gino.scalar()
-#     return count
 
 async def select_user(user_id):
     user = await User.query.where(User.user_id == user_id).gino.first()
@@ -104,16 +101,17 @@ async def select_current_order(user_item):
     return current_order
 
 
-# async def delete_item_cur_order(user_id, item_id):
-#     current_order = await CurrentOrder.query.where(
-#         CurrentOrder.user_id == user_id and CurrentOrder.item_id == item_id).gino.first()
-#     await current_order.delete()
-
-
-async def change_quantity_cur_order(user_item, new_quahtity, new_sum):
+async def change_quantity_cur_order(user_item, new_quantity, new_sum, delivery):
     current_order = await CurrentOrder.query.where(
         CurrentOrder.user_item == user_item).gino.first()
-    await current_order.update(quantity=new_quahtity, sum=new_sum).apply()
+    if delivery == 0:
+        sum1 = current_order.del_quantity * current_order.del_price
+        sum2 = sum1 + new_sum
+        await current_order.update(quantity=new_quantity, sum=sum2).apply()
+    else:
+        sum1 = current_order.quantity * current_order.price
+        sum2 = sum1 + new_sum
+        await current_order.update(del_quantity=new_quantity, sum=sum2).apply()
 
 
 async def set_comment(user_id, comment):

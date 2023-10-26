@@ -23,13 +23,17 @@ clb = KeyboardButton('/отмена')
 cancel_buy_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 cancel_buy_kb.add(clb)
 
+clo = KeyboardButton('/отменить')
+cancel_change_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+cancel_change_kb.add(clo)
+
 order_kb = InlineKeyboardMarkup(row_width=1, inline_keyboard=[
     [InlineKeyboardButton(text='Отправить заказ', callback_data='order')],
     [InlineKeyboardButton(text='Добавить товар в заказ', callback_data='addorder')],
     [InlineKeyboardButton(text='Удалить товар из заказа', callback_data='delitem')],
     [InlineKeyboardButton(text='Изменить количество товаров в заказе', callback_data='change')],
-    [InlineKeyboardButton(text='Удалить заказ', callback_data='delall')],
     [InlineKeyboardButton(text='Добавить комментарий к заказу', callback_data='comment')],
+    [InlineKeyboardButton(text='Удалить заказ', callback_data='delall')],
     [InlineKeyboardButton(text='Назад', callback_data='back')]
 ])
 
