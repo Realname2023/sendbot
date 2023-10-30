@@ -1,11 +1,11 @@
-from aiogram import types
-from aiogram.dispatcher import FSMContext
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, ChatType
-from create_bot import bot, dp, operator
-from handlers.states import select_city, get_order, FSMClient, FSMOrder, del_item, new_quantity
-from handlers import quick_commands as commands
-from keyboards import kb_client, buying_kb, cancel_buy_kb, order_kb, cancel_change_kb
 import time
+from aiogram import types, Dispatcher
+from aiogram.dispatcher import FSMContext
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
+from create_bot import bot, operator
+from handlers.states import get_order, FSMOrder, del_item, new_quantity
+from handlers import quick_commands as commands
+from keyboards import kb_client, order_kb, cancel_change_kb
 
 
 async def create_order(user_id):
@@ -46,8 +46,8 @@ async def create_order(user_id):
                              reply_markup=order_kb)
 
 
-@dp.message_handler(state="*", commands=['отменить'])
-async def cancel_handier(message: types.Message, state: FSMContext):
+# @dp.message_handler(state="*", commands=['отменить'])
+async def cancel_order(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     current_state = await state.get_state()
     if current_state is None:
@@ -59,7 +59,7 @@ async def cancel_handier(message: types.Message, state: FSMContext):
     await create_order(user_id)
 
 
-@dp.callback_query_handler(text='order')
+# @dp.callback_query_handler(text='order')
 async def send_order(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
@@ -92,14 +92,14 @@ async def send_order(call: types.CallbackQuery):
     await call.answer('Send')
 
 
-@dp.callback_query_handler(text='addorder')
-async def order(call: types.CallbackQuery):
+# @dp.callback_query_handler(text='addorder')
+async def order_add(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     await call.message.answer("Выберите товары для того, чтобы добавить их в заказ", reply_markup=kb_client)
     await call.answer('Add')
 
 
-@dp.callback_query_handler(text='delitem')
+# @dp.callback_query_handler(text='delitem')
 async def delete_item_button(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
@@ -114,7 +114,7 @@ async def delete_item_button(call: types.CallbackQuery):
     await call.answer('del')
 
 
-@dp.callback_query_handler(del_item.filter())
+# @dp.callback_query_handler(del_item.filter())
 async def delete_item(call: types.CallbackQuery, callback_data: dict):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
@@ -126,7 +126,7 @@ async def delete_item(call: types.CallbackQuery, callback_data: dict):
     await call.answer(text=f'{item.name} удалена', show_alert=True)
 
 
-@dp.callback_query_handler(text='change')
+# @dp.callback_query_handler(text='change')
 async def change_quantity(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
@@ -148,7 +148,7 @@ async def change_quantity(call: types.CallbackQuery):
     await call.answer('change')
 
 
-@dp.callback_query_handler(new_quantity.filter())
+# @dp.callback_query_handler(new_quantity.filter())
 async def callback_new_quantity(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
@@ -183,7 +183,7 @@ async def callback_new_quantity(call: types.CallbackQuery, callback_data: dict, 
         await call.answer("Choose")
 
 
-@dp.message_handler(state=FSMOrder.new_quantity)
+# @dp.message_handler(state=FSMOrder.new_quantity)
 async def load_new_quantity(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     try:
@@ -197,7 +197,6 @@ async def load_new_quantity(message: types.Message, state: FSMContext):
     new_quantity = int(data.get('new_quantity'))
     user_item = data.get('order_item_id')
     delivery = data.get("order_delivery")
-    print(delivery)
     price = int(data.get('order_price'))
     new_sum = new_quantity*price
     await commands.change_quantity_cur_order(user_item, new_quantity, new_sum, delivery)
@@ -206,7 +205,7 @@ async def load_new_quantity(message: types.Message, state: FSMContext):
     await create_order(user_id)
 
 
-@dp.callback_query_handler(text='comment')
+# @dp.callback_query_handler(text='comment')
 async def comment_user(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     await call.message.answer('Напишите комментарий')
@@ -214,7 +213,7 @@ async def comment_user(call: types.CallbackQuery):
     await call.answer('comment')
 
 
-@dp.message_handler(state=FSMOrder.comment)
+# @dp.message_handler(state=FSMOrder.comment)
 async def set_comment(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     comment = message.text
@@ -223,7 +222,7 @@ async def set_comment(message: types.Message, state: FSMContext):
     await state.reset_state()
 
 
-@dp.callback_query_handler(text='delall')
+# @dp.callback_query_handler(text='delall')
 async def delete_all_items(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
@@ -233,14 +232,14 @@ async def delete_all_items(call: types.CallbackQuery):
     await call.answer(text='Ваша корзина пуста')
 
 
-@dp.callback_query_handler(text='myorders')
+# @dp.callback_query_handler(text='myorders')
 async def client_orders(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
     await create_order(user_id)
 
 
-@dp.callback_query_handler(text='ordershistory')
+# @dp.callback_query_handler(text='ordershistory')
 async def get_history_orders(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
@@ -250,3 +249,20 @@ async def get_history_orders(call: types.CallbackQuery):
     except:
         await call.message.answer("Вы еще ничего не заказывали", reply_markup=kb_client)
     await call.answer('История заказов')
+
+
+
+def register_handlers_order(dp: Dispatcher):
+    dp.register_message_handler(cancel_order, state="*", commands=["отменить"])
+    dp.register_callback_query_handler(send_order, text="order")
+    dp.register_callback_query_handler(order_add, text="addorder")
+    dp.register_callback_query_handler(delete_item_button, text="delitem")
+    dp.register_callback_query_handler(delete_item, del_item.filter())
+    dp.register_callback_query_handler(change_quantity, text="change")
+    dp.register_callback_query_handler(callback_new_quantity, new_quantity.filter())
+    dp.register_message_handler(load_new_quantity, state=FSMOrder.new_quantity)
+    dp.register_callback_query_handler(comment_user, text="comment")
+    dp.register_message_handler(set_comment, state=FSMOrder.comment)
+    dp.register_callback_query_handler(delete_all_items, text="delall")
+    dp.register_callback_query_handler(client_orders, text="myorders")
+    dp.register_callback_query_handler(get_history_orders, text="ordershistory")

@@ -1,13 +1,13 @@
-from aiogram import types
+from aiogram import types, Dispatcher
 from aiogram.types import InputFile
-from create_bot import bot, dp, operator
+from create_bot import bot, operator
 from handlers.throttling import rate_limit
 from keyboards import kb_client, operator_kb
 from handlers import quick_commands as commands
 
 
+# @dp.message_handler(commands=['start', 'help'])
 @rate_limit(limit=2)
-@dp.message_handler(commands=['start', 'help'])
 async def command_start(message: types.Message):
     photo = InputFile('media/VTG.png')
     chat_id = message.chat.id
@@ -33,7 +33,7 @@ async def command_start(message: types.Message):
                                  reply_markup=kb_client)
 
 
-@dp.callback_query_handler(text='adres')
+# @dp.callback_query_handler(text='adres')
 async def show_place(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     await call.message.answer('Адреса:\nг. Семей, ул. Джангильдина 82/1,\n'
@@ -45,7 +45,7 @@ async def show_place(call: types.CallbackQuery):
                                         reply_markup=kb_client)
     await call.answer('адреса')
 
-@dp.callback_query_handler(text='time')
+# @dp.callback_query_handler(text='time')
 async def show_work_time(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     await call.message.answer(
@@ -54,8 +54,7 @@ async def show_work_time(call: types.CallbackQuery):
     await call.answer('график работы')
 
 
-# def register_handlers_client(dp : Dispatcher):
-# 	dp.register_message_handler(command_start, commands=['start', 'help'])
-# 	dp.register_message_handler(pizza_open_command, text='График_работы')
-# 	dp.register_message_handler(pizza_place_command, text='Адреса_контакты')
-# 	dp.register_message_handler(back_command, commands=['Назад'])
+def register_handlers_client(dp: Dispatcher):
+    dp.register_message_handler(command_start, commands=["start", "help"])
+    dp.register_callback_query_handler(show_place, text="adres")
+    dp.register_callback_query_handler(show_work_time, text="time")

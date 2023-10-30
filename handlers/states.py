@@ -14,12 +14,13 @@ get_delivery = CallbackData("delivery", "status")
 class FSMAdmin(StatesGroup):
     photo = State()
     item_id = State()
-    article = State()
     name = State()
     unit = State()
     description = State()
     price = State()
-    quantity = State()
+    del_price = State()
+    item_city = State()
+    cat_back = State()
 
 
 class FSMAdmin2(StatesGroup):

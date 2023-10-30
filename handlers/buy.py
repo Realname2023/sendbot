@@ -1,18 +1,17 @@
+import re
 from aiogram.dispatcher import FSMContext
-from aiogram import types
-from aiogram.dispatcher.filters import Text
-from create_bot import dp, bot, operator
-from data_base.base_db import Client, CurrentOrder
+from aiogram import types, Dispatcher
+from create_bot import bot
+from data_base.base_db import Client
 from handlers import quick_commands as commands
 from handlers.order import create_order
-from handlers.states import buy_item, FSMClient, get_order
-from keyboards import cancel_buy_kb, kb_client, order_kb
+from handlers.states import buy_item, FSMClient
+from keyboards import cancel_buy_kb, kb_client
 from aiogram.types import ReplyKeyboardRemove
-import re
 
 
-@dp.message_handler(state="*", commands=['отмена'])
-async def cancel_handier(message: types.Message, state: FSMContext):
+# @dp.message_handler(state="*", commands=['отмена'])
+async def cancel_buy(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:
         await message.answer('Ok', reply_markup=ReplyKeyboardRemove())
@@ -23,7 +22,7 @@ async def cancel_handier(message: types.Message, state: FSMContext):
     await message.answer('Выберите товары', reply_markup=kb_client)
 
 
-@dp.callback_query_handler(buy_item.filter())
+# @dp.callback_query_handler(buy_item.filter())
 async def callback_buy(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
     user = call.from_user.id
     item_id = callback_data.get("item_id")
@@ -46,12 +45,11 @@ async def callback_buy(call: types.CallbackQuery, callback_data: dict, state: FS
         await state.update_data(buy_price=price)
         await state.update_data(buy_del_price=read.del_price)
         await state.update_data(delivery=0)
-    await state.update_data(buy_price=price)
     await state.update_data(buy_unit=unit)
     await state.update_data(city=city)
 
 
-@dp.message_handler(state=FSMClient.buy_quantity)
+# @dp.message_handler(state=FSMClient.buy_quantity)
 async def load_quantity(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     pat = r"[^0-9]"
@@ -93,7 +91,7 @@ async def load_quantity(message: types.Message, state: FSMContext):
         await create_order(user_id)
 
 
-@dp.message_handler(state=FSMClient.org_name)
+# @dp.message_handler(state=FSMClient.org_name)
 async def indicate_org(message: types.Message, state: FSMContext):
     org_name = message.text
     await state.update_data(org_name=org_name)
@@ -101,7 +99,7 @@ async def indicate_org(message: types.Message, state: FSMContext):
     await FSMClient.address.set()
 
 
-@dp.message_handler(state=FSMClient.address)
+# @dp.message_handler(state=FSMClient.address)
 async def indicate_address(message: types.Message, state: FSMContext):
     address = message.text
     await state.update_data(address=address)
@@ -109,7 +107,7 @@ async def indicate_address(message: types.Message, state: FSMContext):
     await FSMClient.phone.set()
 
 
-@dp.message_handler(state=FSMClient.phone)
+# @dp.message_handler(state=FSMClient.phone)
 async def indicate_phone(message: types.Message, state: FSMContext):
     phone = message.text
     user_id = message.from_user.id
@@ -143,3 +141,11 @@ async def indicate_phone(message: types.Message, state: FSMContext):
                                      sum, city, comment)
     await state.finish()
     await create_order(user_id)
+
+def register_handlers_buy(dp: Dispatcher):
+    dp.register_message_handler(cancel_buy, state="*", commands=['отмена'])
+    dp.register_callback_query_handler(callback_buy, buy_item.filter())
+    dp.register_message_handler(load_quantity, state=FSMClient.buy_quantity)
+    dp.register_message_handler(indicate_org, state=FSMClient.org_name)
+    dp.register_message_handler(indicate_address, state=FSMClient.address)
+    dp.register_message_handler(indicate_phone, state=FSMClient.phone)

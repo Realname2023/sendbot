@@ -1,8 +1,9 @@
 import os
+import logging
 from aiogram.utils import executor
 from create_bot import dp, URL_APP, bot
 from data_base.gino_db import db, db_startup
-import logging
+from handlers import admin, client, buy, inline, order, admin_cat, admin_import
 
 logging.basicConfig(level=logging.INFO)
 
@@ -22,11 +23,14 @@ async def on_startup(dp):
 async def on_shutdown(dp):
     await bot.delete_webhook()
 
-from handlers import client, admin
 
-# client.register_handlers_client(dp)
 admin.register_handlers_admin(dp)
-# other.register_handlers_other(dp)
+admin_cat.register_handlers_admin_cat(dp)
+admin_import.register_handlers_admin_import(dp)
+client.register_handlers_client(dp)
+buy.register_handlers_buy(dp)
+inline.register_handlers_inline(dp)
+order.register_handlers_order(dp)
 
 # executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
 executor.start_webhook(

@@ -1,13 +1,13 @@
-from aiogram import types
+from aiogram import types, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from create_bot import dp, bot
+from create_bot import bot
 from handlers import quick_commands as commands
 from handlers.states import select_cat, buy_item
 from keyboards.client_kb import kb_client
 
 
-@dp.callback_query_handler(select_cat.filter())
-async def select_wire_accessories(call: types.CallbackQuery, callback_data: dict):
+# @dp.callback_query_handler(select_cat.filter())
+async def select_category(call: types.CallbackQuery, callback_data: dict):
     call_data = callback_data.get("cat")
     if call_data.startswith('buy_'):
         call_data = call_data.replace('buy_', '')
@@ -28,7 +28,7 @@ async def select_wire_accessories(call: types.CallbackQuery, callback_data: dict
                                      ]))
             else:
                 await bot.send_photo(call.from_user.id, ret.photo,
-                                     f'<b>{ret.name}</b>\nХарактеристики: {ret.description}\nСклад: {ret.city} '
+                                     f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
                                      f'\nЦена: {ret.price} тенге за {ret.unit}\nЦена с доставкой: {ret.del_price} тенге',
                                      parse_mode=types.ParseMode.HTML,
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
@@ -61,8 +61,13 @@ async def select_wire_accessories(call: types.CallbackQuery, callback_data: dict
         await call.message.answer(text, reply_markup=keyboard)
     await call.answer('Выберите')
 
-@dp.callback_query_handler(text='back')
+# @dp.callback_query_handler(text='back')
 async def back_main(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     await call.message.answer('Главное меню. Выберите товары и создайте заказ', reply_markup=kb_client)
     await call.answer('Главное меню')
+
+
+def register_handlers_inline(dp: Dispatcher):
+    dp.register_callback_query_handler(select_category, select_cat.filter())
+    dp.register_callback_query_handler(back_main, text='back')
