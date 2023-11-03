@@ -7,7 +7,7 @@ client_order = CallbackData("get_order", "user_id")
 buy_item = CallbackData("buy", "item_id", "price")
 select_cat = CallbackData("sel", "cat")
 select_city = CallbackData("cities", "city")
-get_order = CallbackData("work", "user_id", "status", "message_id")
+get_order = CallbackData("work", "user_id", "status")
 get_delivery = CallbackData("delivery", "status")
 
 

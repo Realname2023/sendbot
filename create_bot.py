@@ -1,6 +1,7 @@
+import requests
+import os
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
-import os
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
@@ -29,3 +30,11 @@ operator = 6398627453
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=storage)
+
+url_webhook = 'https://vostoktekhgaz.bitrix24.kz/rest/4053/zke9kazjd7b4eeub/'
+method = 'crm.lead.add'
+
+def b24rest_request(url_webhook: str, method: str, parametr: dict) -> dict:
+    url = url_webhook + method + '.json?'
+    response = requests.post(url, verify=False, json=parametr) 
+    return response.json()

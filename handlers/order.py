@@ -2,7 +2,7 @@ import time
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
-from create_bot import bot, operator
+from create_bot import bot, operator, url_webhook, method, b24rest_request
 from handlers.states import get_order, FSMOrder, del_item, new_quantity
 from handlers import quick_commands as commands
 from keyboards import kb_client, order_kb, cancel_change_kb
@@ -81,12 +81,19 @@ async def send_order(call: types.CallbackQuery):
     order = call.message.text
     order_text = order.replace('Заказ в корзине', 'Отправлен заказ')
     await commands.add_order(user_id, order_text, status)
-    message_id = call.message.message_id
-    mess = await bot.forward_message(operator, from_chat_id=call.from_user.id, message_id=message_id)
-    await bot.send_message(operator, '^^^^^^^^^^^^^^^^^^^^^^^^^^^', reply_markup=InlineKeyboardMarkup().add(
+    # message_id = call.message.message_id
+    #  mess = await bot.forward_message(operator, from_chat_id=call.from_user.id, message_id=message_id)
+    parametr = {"fields": {
+    "TITLE": client_org_name,
+    "PHONE": [{'VALUE': client_phone, "VALUE_TYPE": "WORK"}],
+    "ADDRESS": client_address,
+    "ADDRESS_CITY": client_city,
+    "COMMENTS": order}}
+    response = b24rest_request(url_webhook, method, parametr)
+    print(response)
+    await bot.send_message(operator, order, reply_markup=InlineKeyboardMarkup().add(
     	InlineKeyboardButton('Взять в работу',
-    						 callback_data=get_order.new(user_id=user_id, status='inwork',
-    													 message_id=mess.message_id))))
+    						 callback_data=get_order.new(user_id=user_id, status='inwork'))))
     await commands.delete_cur_order(user_id)
     await call.message.answer('Ваш заказ отправлен', reply_markup=kb_client)
     await call.answer('Send')
