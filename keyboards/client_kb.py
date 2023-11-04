@@ -16,7 +16,7 @@ kb_client = InlineKeyboardMarkup(row_width=2, inline_keyboard=[
     [InlineKeyboardButton(text='Адреса контакты', callback_data='adres'),
     InlineKeyboardButton(text='График работы', callback_data='time')],
     [InlineKeyboardButton(text='История заказов', callback_data='ordershistory')],
-    [InlineKeyboardButton(text='Отзывы', callback_data='voice')]
+    [InlineKeyboardButton('Написать оператору', url='https://t.me/VTGonlinebot')]
 ])
 
 clb = KeyboardButton('/отмена')
