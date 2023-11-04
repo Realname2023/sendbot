@@ -12,7 +12,7 @@ storage=MemoryStorage()
 TOKEN = str(os.getenv("TOKEN"))
 # TOKEN = '6684662073:AAGw6gZtBmQ0QWpoRnvoyAsZeswyDUQipnw'
 
-URL_APP = 'https://deplbot-a5f641a62530.herokuapp.com/'
+URL_APP = 'https://deplbot-0e88a7540a4d.herokuapp.com/'
 
 POSTGREURI = str(os.getenv("DATABASE_URL"))
 
