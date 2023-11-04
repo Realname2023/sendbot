@@ -85,7 +85,7 @@ async def send_order(call: types.CallbackQuery):
     #  mess = await bot.forward_message(operator, from_chat_id=call.from_user.id, message_id=message_id)
     parametr = {"fields": {
     "TITLE": client_org_name,
-    "SOURCE_ID": 207,
+    "SOURCE_ID": 'UC_SLN7SG',
     "PHONE": [{'VALUE': client_phone, "VALUE_TYPE": "WORK"}],
     "ADDRESS": client_address,
     "ADDRESS_CITY": client_city,
