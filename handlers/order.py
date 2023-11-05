@@ -1,4 +1,4 @@
-import time
+import pytz
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
@@ -6,6 +6,9 @@ from create_bot import bot, operator, url_webhook, method, b24rest_request
 from handlers.states import get_order, FSMOrder, del_item, new_quantity
 from handlers import quick_commands as commands
 from keyboards import kb_client, order_kb, cancel_change_kb
+from datetime import datetime
+
+tz = pytz.timezone('Asia/Almaty')
 
 
 async def create_order(user_id):
@@ -14,13 +17,13 @@ async def create_order(user_id):
     if cur_orders == [] or client == None:
         await bot.send_message(user_id, 'У Вас еще нет текущих заказов', reply_markup=kb_client)
     else:
-        struct = time.localtime(time.time())
-        seconds = time.strftime('%d.%m.%Y %H:%M', struct)
+        now = datetime.now(tz)
+        date_time = now.strftime("%d.%m.%Y %H:%M")
         client_city = client.city
         org_name = client.org_name
         address = client.address
         phone = client.phone
-        info_client = f'{seconds}\n<b>Заказ в корзине от {org_name}  из {client_city}:\n' \
+        info_client = f'{date_time}\n<b>Заказ в корзине от {org_name}  из {client_city}:\n' \
             f'организация: {org_name}\nАдрес: {address}\nТелефон: {phone}\n</b>'
         asum = 0
         strpos = ""
