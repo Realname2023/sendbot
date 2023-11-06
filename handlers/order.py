@@ -89,7 +89,7 @@ async def send_order(call: types.CallbackQuery):
     parametr = {"fields": {
     "TITLE": client_org_name,
     "SOURCE_ID": 'UC_SLN7SG',
-    "COMPANY_ID": client_org_name,
+    "COMPANY_TITLE": client_org_name,
     "PRODUCT_ID": "1",
     "PHONE": [{'VALUE': client_phone, "VALUE_TYPE": "WORK"}],
     "ADDRESS": client_address,
