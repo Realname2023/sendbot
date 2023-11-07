@@ -73,13 +73,6 @@ async def send_order(call: types.CallbackQuery):
     client_address = client.address
     client_phone = client.phone
     cur_order = await commands.select_current_orders(user_id)
-    c = 1
-    info_order = {}
-    for ret in cur_order:
-        pos = {c: [ret.name, ret.unit, ret.price,
-                   ret.quantity, ret.sum, ret.city, ret.comment]}
-        info_order.update(pos)
-        c = c + 1
     # status = 'Отправлен'
     order = call.message.text
     # order_text = order.replace('Заказ в корзине', 'Отправлен заказ')
