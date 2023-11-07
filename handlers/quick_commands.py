@@ -73,11 +73,12 @@ async def select_client(user_id):
     return client
 
 
-async def add_current_order(user_item, user_id, item_id, name, unit,
+async def add_current_order(user_item, user_id, item_id, b_id, name, unit,
                             price, del_price, quantity, del_quantity, sum,
                             city, comment=''):
     try:
-        current_order = CurrentOrder(user_item=user_item, user_id=user_id, item_id=item_id, name=name,
+        current_order = CurrentOrder(user_item=user_item, user_id=user_id, item_id=item_id,
+                                     b_id=b_id, name=name,
                                      unit=unit, price=price, del_price=del_price,
                                      quantity=quantity, del_quantity=del_quantity,
                                      sum=sum, city=city, comment=comment)

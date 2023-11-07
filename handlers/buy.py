@@ -31,11 +31,13 @@ async def callback_buy(call: types.CallbackQuery, callback_data: dict, state: FS
     item = read.name
     unit = read.unit
     city = read.city
+    b_id = read.b_id
     await call.answer(text=f'Укажите количество {unit} {item}.', show_alert=True)
     await call.message.edit_reply_markup()
     await bot.send_message(user, text=f"Укажие количество {unit} {item}", reply_markup=cancel_buy_kb)
     await FSMClient.buy_quantity.set()
     await state.update_data(buy_item_id=item_id)
+    await state.update_data(buy_b_id=b_id)
     await state.update_data(item=item)
     if price == read.del_price:
         await state.update_data(buy_del_price=price)
@@ -67,6 +69,7 @@ async def load_quantity(message: types.Message, state: FSMContext):
     else:
         data = await state.get_data()
         item_id = data.get("buy_item_id")
+        b_id = data.get("buy_b_id")
         user_item = str(user_id) + item_id
         name = data.get('item')
         price = data.get('buy_price')
@@ -84,8 +87,9 @@ async def load_quantity(message: types.Message, state: FSMContext):
             sum = price * quant
         city = data.get("city")
         comment = ''
-        await commands.add_current_order(user_item, user_id, item_id, name, unit,
-                                         price, del_price, quantity, del_quantity,
+        await commands.add_current_order(user_item, user_id, item_id, b_id, name, 
+                                         unit, price, del_price, quantity, 
+                                         del_quantity,
                                          sum, city, comment)
         await state.finish()
         await create_order(user_id)
@@ -119,6 +123,7 @@ async def indicate_phone(message: types.Message, state: FSMContext):
                     phone=phone)
     await client.create()
     item_id = data.get("buy_item_id")
+    b_id = data.get("buy_b_id")
     user_item = str(user_id) + item_id
     name = data.get('item')
     price = data.get('buy_price')
@@ -136,7 +141,7 @@ async def indicate_phone(message: types.Message, state: FSMContext):
         sum = price * quant
     city = data.get("city")
     comment = ''
-    await commands.add_current_order(user_item, user_id, item_id, name, unit,
+    await commands.add_current_order(user_item, user_id, item_id, b_id, name, unit,
                                      price, del_price, quantity, del_quantity,
                                      sum, city, comment)
     await state.finish()

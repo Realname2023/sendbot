@@ -34,6 +34,7 @@ class FSMAdmin2(StatesGroup):
 
 class FSMClient(StatesGroup):
     buy_item_id = State()
+    buy_b_id = State()
     item = State()
     buy_price = State()
     buy_del_price = State()

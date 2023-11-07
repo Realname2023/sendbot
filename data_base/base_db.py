@@ -40,20 +40,20 @@ class All_items(TimedBaseModel):
     query: sql.select
 
 
-class All_products(TimedBaseModel):
-    __tablename__ = 'all_products'
-    item_id = Column(String(100), primary_key=True)
-    photo = Column(String(100))
-    name = Column(String(200))
-    unit = Column(String(100))
-    description = Column(String(100000))
-    price = Column(BigInteger)
-    del_price = Column(BigInteger)
-    city = Column(String(100))
-    city_back = Column(String(100))
-    b_id = Column(String(100))
+# class All_products(TimedBaseModel):
+#     __tablename__ = 'all_products'
+#     item_id = Column(String(100), primary_key=True)
+#     photo = Column(String(100))
+#     name = Column(String(200))
+#     unit = Column(String(100))
+#     description = Column(String(100000))
+#     price = Column(BigInteger)
+#     del_price = Column(BigInteger)
+#     city = Column(String(100))
+#     city_back = Column(String(100))
+#     b_id = Column(String(100))
 
-    query: sql.select
+#     query: sql.select
 
 class Category(TimedBaseModel):
     __tablename__ = 'category_items'
@@ -81,6 +81,7 @@ class CurrentOrder(TimedBaseModel):
     user_item = Column(String(100), primary_key=True)
     user_id = Column(BigInteger)
     item_id = Column(String(100))
+    b_id = Column(String(100))
     name = Column(String(100))
     unit = Column(String(100))
     price = Column(BigInteger)

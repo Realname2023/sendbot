@@ -95,7 +95,7 @@ async def send_order(call: types.CallbackQuery):
             quantity = ret.quantity
         else:
             quantity = ret.del_quantity
-        pos = {"PRODUCT_ID": ret.item_id,
+        pos = {"PRODUCT_ID": ret.b_id,
                 "PRICE": float(ret.price),
                 "QUANTITY": quantity
                 }
