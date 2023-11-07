@@ -2,7 +2,7 @@ import pytz
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
-from create_bot import bot, operator, url_webhook, method, b24rest_request
+from create_bot import bot, operator, url_webhook, method, b24rest_request, method2
 from handlers.states import get_order, FSMOrder, del_item, new_quantity
 from handlers import quick_commands as commands
 from keyboards import kb_client, order_kb, cancel_change_kb
@@ -67,7 +67,7 @@ async def send_order(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
     client = await commands.select_client(user_id)
-    client_id = client.user_id
+    # client_id = client.user_id
     client_city = client.city
     client_org_name = client.org_name
     client_address = client.address
@@ -80,23 +80,38 @@ async def send_order(call: types.CallbackQuery):
                    ret.quantity, ret.sum, ret.city, ret.comment]}
         info_order.update(pos)
         c = c + 1
-    status = 'Отправлен'
+    # status = 'Отправлен'
     order = call.message.text
-    order_text = order.replace('Заказ в корзине', 'Отправлен заказ')
-    await commands.add_order(user_id, order_text, status)
+    # order_text = order.replace('Заказ в корзине', 'Отправлен заказ')
+    # await commands.add_order(user_id, order_text, status)
     # message_id = call.message.message_id
     #  mess = await bot.forward_message(operator, from_chat_id=call.from_user.id, message_id=message_id)
     parametr = {"fields": {
     "TITLE": client_org_name,
     "SOURCE_ID": 'UC_SLN7SG',
     "COMPANY_TITLE": client_org_name,
-    "PRODUCT_ID": "1",
     "PHONE": [{'VALUE': client_phone, "VALUE_TYPE": "WORK"}],
     "ADDRESS": client_address,
     "ADDRESS_CITY": client_city,
     "COMMENTS": order}}
     response = b24rest_request(url_webhook, method, parametr)
-    print(response)
+    lead_id = str(response.get('result'))
+    poses = []
+    for ret in cur_order:
+        if ret.del_quantity == 0:
+            quantity = ret.quantity
+        else:
+            quantity = ret.del_quantity
+        pos = {"PRODUCT_ID": ret.item_id,
+                "PRICE": float(ret.price),
+                "QUANTITY": quantity
+                }
+        poses.append(pos)
+    parametr2 = {
+        "id": lead_id,
+        "rows": poses
+    }
+    response2 = b24rest_request(url_webhook, method2, parametr2)
     await bot.send_message(operator, order, reply_markup=InlineKeyboardMarkup().add(
     	InlineKeyboardButton('Взять в работу',
     						 callback_data=get_order.new(user_id=user_id, status='inwork'))))
