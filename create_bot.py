@@ -27,6 +27,8 @@ ip = 'localhost'
 # POSTGREURI=f'postgresql://{PGUSER}:{PGPASSWORD}@{ip}/{DATABASE}'
 # POSTGREURI = 'postgres://oudkamoyueapuv:26ce0912ff0ce412bd22fdce6c0111954f42076a9af30010ad01e0fa2a8fd633@ec2-34-242-154-118.eu-west-1.compute.amazonaws.com:5432/d8sr8luiviue8r'
 operator = 6398627453
+arenda_items = ['30', '31', '32', '33', '34', '35',
+            '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46']
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=storage)

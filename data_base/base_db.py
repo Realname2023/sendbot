@@ -88,6 +88,7 @@ class CurrentOrder(TimedBaseModel):
     del_price = Column(BigInteger)
     quantity = Column(BigInteger)
     del_quantity = Column(BigInteger)
+    arenda_time = Column(BigInteger)
     sum = Column(BigInteger)
     city = Column(String(100))
     comment = Column(String(10000))

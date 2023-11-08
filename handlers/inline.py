@@ -1,6 +1,6 @@
 from aiogram import types, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from create_bot import bot
+from create_bot import bot, arenda_items
 from handlers import quick_commands as commands
 from handlers.states import select_cat, buy_item
 from keyboards.client_kb import kb_client
@@ -24,6 +24,20 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
                                         [InlineKeyboardButton('Купить',callback_data=buy_item.new(item_id=ret.item_id,
                                                                                                   price=ret.price))],
+                                         [InlineKeyboardButton('Назад', callback_data=select_cat.new(ret.city_back))]
+                                     ]))
+            elif ret.item_id in arenda_items:
+                await bot.send_photo(call.from_user.id, ret.photo,
+                                     f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
+                                     f'\nЦена: {ret.price} тенге за {ret.unit}\nАренда: {ret.del_price} тенге',
+                                     parse_mode=types.ParseMode.HTML,
+                                     reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
+                                         [InlineKeyboardButton('Купить',
+                                                               callback_data=buy_item.new(item_id=ret.item_id,
+                                                                                          price=ret.price))],
+                                         [InlineKeyboardButton('Аренда',
+                                                               callback_data=buy_item.new(item_id=ret.item_id,
+                                                                                          price=ret.del_price))],
                                          [InlineKeyboardButton('Назад', callback_data=select_cat.new(ret.city_back))]
                                      ]))
             else:

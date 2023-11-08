@@ -74,13 +74,14 @@ async def select_client(user_id):
 
 
 async def add_current_order(user_item, user_id, item_id, b_id, name, unit,
-                            price, del_price, quantity, del_quantity, sum,
+                            price, del_price, quantity, del_quantity, arenda_time, sum,
                             city, comment=''):
     try:
         current_order = CurrentOrder(user_item=user_item, user_id=user_id, item_id=item_id,
                                      b_id=b_id, name=name,
                                      unit=unit, price=price, del_price=del_price,
                                      quantity=quantity, del_quantity=del_quantity,
+                                     arenda_time=arenda_time,
                                      sum=sum, city=city, comment=comment)
         await current_order.create()
     except UniqueViolationError:
