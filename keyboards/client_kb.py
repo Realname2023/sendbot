@@ -15,7 +15,7 @@ kb_client = InlineKeyboardMarkup(row_width=2, inline_keyboard=[
     InlineKeyboardButton(text='Акции', callback_data='actions')],
     [InlineKeyboardButton(text='Адреса контакты', callback_data='adres'),
     InlineKeyboardButton(text='График работы', callback_data='time')],
-    [InlineKeyboardButton(text='История заказов', callback_data='ordershistory')],
+    [InlineKeyboardButton('Отзывы полезные ссылки', callback_data='voices')],
     [InlineKeyboardButton('Написать оператору', url='https://t.me/VTGonlinebot')]
 ])
 

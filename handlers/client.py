@@ -68,8 +68,31 @@ async def actions(call: types.CallbackQuery):
     await call.answer("акции")
 
 
+# @dp.callback_query_handler(text="voices")
+async def voices(call: types.CallbackQuery):
+    await call.message.edit_reply_markup()
+    await call.message.answer("Полезные ссылки:\n"
+                              "https://wa.me/message/6KT7KF6BOGEJA1\n"
+                              "\n"
+                              "https://www.instagram.com/vtg_gas/\n"
+                              "\n"
+                              "ostoktehgaz@mail.ru\n"
+                              "\n"
+                              "Отзывы можно оставить по ссылкам:\n"
+                              "\n"
+                              "https://go.2gis.com/us0av\n"
+                              "\n"
+                              "https://go.2gis.com/o9b30v\n"
+                              "\n"
+                              "https://go.2gis.com/o9b30v\n"
+                              "\n"
+                              "https://go.2gis.com/xhrt6",
+                              reply_markup=kb_client)
+
+
 def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(command_start, commands=["start", "help"])
     dp.register_callback_query_handler(show_place, text="adres")
     dp.register_callback_query_handler(show_work_time, text="time")
     dp.register_callback_query_handler(actions, text="actions")
+    dp.register_callback_query_handler(voices, text="voices")
