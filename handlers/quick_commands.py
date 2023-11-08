@@ -1,8 +1,9 @@
 from asyncpg import UniqueViolationError
 from create_bot import bot
 from data_base.gino_db import db
-from data_base.base_db import User, Category,\
-    Oredrs, Client, CurrentOrder, All_items
+from data_base.base_db import User, Category, \
+    Oredrs, Client, CurrentOrder, All_items, Actions
+
 
 async def add_user(user_id: int, first_name: str, last_name: str, user_name: str, status: str):
     try:
@@ -126,3 +127,7 @@ async def set_comment(user_id, comment):
 async def delete_cur_order(user_id):
     await CurrentOrder.delete.where(
         CurrentOrder.user_id == user_id).gino.all()
+
+async def select_action():
+    action = await Actions.query.gino.first()
+    return action

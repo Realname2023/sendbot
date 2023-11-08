@@ -29,7 +29,8 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
             elif ret.item_id in arenda_items:
                 await bot.send_photo(call.from_user.id, ret.photo,
                                      f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
-                                     f'\nЦена: {ret.price} тенге за {ret.unit}\nАренда: {ret.del_price} тенге',
+                                     f'\nЦена: {ret.price} тенге за {ret.unit}\nАренда: {ret.del_price} тенге'
+                                     f'за месяц с залогом по стоимости баллона (40000)',
                                      parse_mode=types.ParseMode.HTML,
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
                                          [InlineKeyboardButton('Купить',

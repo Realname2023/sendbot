@@ -1,35 +1,32 @@
 from aiogram.dispatcher import FSMContext
 from aiogram import types, Dispatcher
-from create_bot import bot
+from create_bot import bot, admin
 from handlers.states import FSMAdmin2
 from keyboards import admin_kb
 from data_base.base_db import Category
 
-ID = None
-
 
 # @dp.message_handler(commands=['moderator2'], is_chat_admin=True)
 async def make_changes_command_cat(message: types.Message):
-    global ID
-    ID = message.from_user.id
-    await bot.send_message(
-        message.from_user.id,
-        "Что хозяин надо???",
-        reply_markup=admin_kb.button_case_admin,
-    )
-    await message.delete()
+    if message.from_user.id == admin:
+        await bot.send_message(
+            message.from_user.id,
+            "Что хозяин надо???",
+            reply_markup=admin_kb.button_case_admin,
+        )
+        await message.delete()
 
 
 # @dp.message_handler(commands=['Загрузить_категорию'], state=None)
 async def cat_start(message: types.Message):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         await FSMAdmin2.id.set()
         await message.reply("Укажи id")
 
 
 # @dp.message_handler(state=FSMAdmin2.id)
 async def set_id(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         id = int(message.text)
         await state.update_data(id=id)
         await message.reply("Теперь укажи callback")
@@ -38,7 +35,7 @@ async def set_id(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin2.callback)
 async def set_callback(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         callback = message.text
         await state.update_data(callback=callback)
         await message.reply("Теперь укажи edit_text")
@@ -47,7 +44,7 @@ async def set_callback(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin2.edit_text)
 async def set_edit_text(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         edit_text = message.text
         await state.update_data(edit_text=edit_text)
         await message.reply("Теперь укажи row_width")
@@ -56,7 +53,7 @@ async def set_edit_text(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin2.row_width)
 async def set_row_width(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         row_width = int(message.text)
         await state.update_data(row_width=row_width)
         await message.reply("Теперь укажи button_text")
@@ -65,7 +62,7 @@ async def set_row_width(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin2.button_text)
 async def set_button_text(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         button_text = message.text
         await state.update_data(button_text=button_text)
         await message.reply("Теперь укажи button_data")
@@ -74,7 +71,7 @@ async def set_button_text(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin2.button_data)
 async def set_button_data(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         button_data = message.text
         await state.update_data(button_data=button_data)
         data = await state.get_data()

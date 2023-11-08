@@ -94,3 +94,11 @@ class CurrentOrder(TimedBaseModel):
     comment = Column(String(10000))
 
     query: sql.select
+
+
+class Actions(TimedBaseModel):
+    __tablename__ = 'actions'
+    photo = Column(String(100), primary_key=True)
+    text = Column(String(10000))
+
+    query: sql.select

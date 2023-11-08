@@ -1,32 +1,28 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram import types, Dispatcher
-from create_bot import bot
+from create_bot import bot, admin
 from handlers.states import FSMAdmin
 from keyboards import admin_kb
 from data_base.base_db import All_items
 
-ID = None
 
 # Получаем id текущего модератора
 # @dp.message_handler(commands=["moderator"], is_chat_admin=True)
 async def make_changes_command(message: types.Message):
-    global ID
-    ID = message.from_user.id
-    print(ID)
-    print(message.chat.id)
-    await bot.send_message(
-        message.from_user.id,
-        "Что хозяин надо???",
-        reply_markup=admin_kb.button_case_admin,
-    )
-    await message.delete()
+    if message.from_user.id == admin:
+        await bot.send_message(
+            message.from_user.id,
+            "Что хозяин надо???",
+            reply_markup=admin_kb.button_case_admin,
+        )
+        await message.delete()
 
 
 # Начало диалога загрузки первого пункта меню
 # @dp.message_handler(commands='Загрузить', state=None)
 async def cm_start(message: types.Message):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         await FSMAdmin.photo.set()
         await message.reply("Загрузи фото")
 
@@ -35,7 +31,7 @@ async def cm_start(message: types.Message):
 # @dp.message_handler(Text(equals='отмена_загрузки', ignore_case=True), state="*")
 # @dp.message_handler(state="*", commands=['отмена_загрузки'])
 async def cancel_handler(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         current_state = await state.get_state()
         if current_state is None:
             return
@@ -45,7 +41,7 @@ async def cancel_handler(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(content_types=['photo'], state=FSMAdmin.photo)
 async def load_photo(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         photo = message.photo[-1].file_id
         await message.reply("Теперь введи id")
         await FSMAdmin.item_id.set()
@@ -54,7 +50,7 @@ async def load_photo(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin.item_id)
 async def load_id(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         item_id = message.text
         await message.reply("Теперь укажи название")
         await FSMAdmin.name.set()
@@ -64,7 +60,7 @@ async def load_id(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin.name)
 async def load_name(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         name = message.text
         await message.reply("Введи единицу измерения")
         await FSMAdmin.unit.set()
@@ -73,7 +69,7 @@ async def load_name(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin.unit)
 async def load_unit(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         unit = message.text
         await message.reply("Введи описание")
         await FSMAdmin.description.set()
@@ -82,7 +78,7 @@ async def load_unit(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin.description)
 async def load_description(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         description = message.text
         await message.reply("Теперь укажи цену")
         await FSMAdmin.price.set()
@@ -91,7 +87,7 @@ async def load_description(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin.price)
 async def load_price(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         price = int(message.text)
         await message.reply("Теперь укажи цену с доставкой")
         await FSMAdmin.del_price.set()
@@ -99,7 +95,7 @@ async def load_price(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin.del_price)
 async def load_del_price(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         del_price = int(message.text)
         await message.reply("Теперь укажи склад")
         await FSMAdmin.item_city.set()
@@ -107,7 +103,7 @@ async def load_del_price(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin.item_city)
 async def load_city(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         item_city = message.text
         await message.reply("Теперь укажи cat_back")
         await FSMAdmin.cat_back.set()
@@ -115,7 +111,7 @@ async def load_city(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=FSMAdmin.cat_back)
 async def load_cat_back(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if message.from_user.id == admin:
         cat_back = message.text
         data = await state.get_data()
         photo = data.get("photo")

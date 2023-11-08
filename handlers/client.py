@@ -54,7 +54,22 @@ async def show_work_time(call: types.CallbackQuery):
     await call.answer('график работы')
 
 
+# @dp.callback_query_handler(text="actions")
+async def actions(call: types.CallbackQuery):
+    await call.message.edit_reply_markup()
+    user = call.from_user.id
+    action = await commands.select_action()
+    if action != None:
+        await bot.send_photo(user, action.photo, caption=action.text,
+                             reply_markup=kb_client)
+    else:
+        await call.message.answer("Пока никаких акций нету",
+                                  reply_markup=kb_client)
+    await call.answer("акции")
+
+
 def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(command_start, commands=["start", "help"])
     dp.register_callback_query_handler(show_place, text="adres")
     dp.register_callback_query_handler(show_work_time, text="time")
+    dp.register_callback_query_handler(actions, text="actions")
