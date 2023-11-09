@@ -1,4 +1,5 @@
 from aiogram import types
+from keyboards.client_kb import kb_client
 from create_bot import dp, bot, operator, admin, sender_photo
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ContentTypes, ContentType
 from handlers import quick_commands as commands
@@ -8,13 +9,16 @@ all_commands = ['/отмена', '/start', '/stop', '/Закрыть_чат', '/
 '/Загрузка_из_файла', '/moderator', '/moderator2', '/moderator3']
 
 
-# @dp.callback_query_handler(client_order.filter())
-# async def accept_order(call: types.CallbackQuery, callback_data: dict):
-#     await call.message.edit_reply_markup()
-#     user = int(callback_data.get("user_id"))
-#     # await commands.add_active_user(user)
-#     await bot.send_message(user, text='Здлавствуйте с Вами скоро свяжуться')
-#     await call.answer(text='Ответ на заявку отправлен', show_alert=True)
+@dp.callback_query_handler(client_order.filter())
+async def accept_order(call: types.CallbackQuery, callback_data: dict):
+    user = int(callback_data.get("user_id"))
+    await bot.send_message(user, text='Здлавствуйте с Вами не могут связаться наши операторы'
+                           "пожалуйста нажмите кнопку 'Написать оператору' и укажите правильно Ваши данные:"
+                           "номер телефона и адрес доставки", 
+                           reply_markup=InlineKeyboardMarkup().add(
+            InlineKeyboardButton("Написать оператору подтвердить", url='https://t.me/VTGonlinebot')))
+    await bot.send_message(user, "==================================", reply_markup=kb_client)
+    await call.answer(text='Ответ на заявку отправлен', show_alert=True)
 
 
 @dp.message_handler(lambda message: message.from_user.id not in [operator, admin, sender_photo] and message.text not in all_commands,

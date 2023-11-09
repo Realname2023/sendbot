@@ -36,12 +36,20 @@ async def command_start(message: types.Message):
 # @dp.callback_query_handler(text='adres')
 async def show_place(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
-    await call.message.answer('Адреса:\nг. Семей, ул. Джангильдина 82/1,\n'
-                              'г. Усть-Каменогорск, уд. Абая 181,\n'
-                              'г. Павлодар, ул. Малая объездная 9/1,\n'
-                              'г. Астана, проспект Абая 99/1\n'
-                              'Контакты:\n'
-                              'Единый номер: +77059565000 WhatsApp',
+    await call.message.answer("Адреса:\nг. г. Семей, ул. Джангильдина 82/1, район областной больницы\n"
+        "https://go.2gis.com/us0av\n"
+        "\n"
+        "г. Усть-Каменогорск, ул. Абая 181, возле рынка 'Дина'\n"
+        "https://go.2gis.com/o9b30v\n"
+        "\n"
+        "г. Павлодар, ул. Малая объездная 9/1, за ТЦ 'Батырмолл'\n"
+        "https://go.2gis.com/hdsq0\n"
+        "\n"
+        "г. Астана, проспект Абая 99/1, бывшая база ВторЧерМет\n"
+        "https://go.2gis.com/xhrt6\n"
+        "\n"
+        "Контакты:\n"
+        "Единый номер: +77059565000 WhatsApp\n",
                                         reply_markup=kb_client)
     await call.answer('адреса')
 
@@ -76,7 +84,7 @@ async def voices(call: types.CallbackQuery):
                               "\n"
                               "https://www.instagram.com/vtg_gas/\n"
                               "\n"
-                              "ostoktehgaz@mail.ru\n"
+                              "vostoktehgaz@mail.ru\n"
                               "\n"
                               "Отзывы можно оставить по ссылкам:\n"
                               "\n"

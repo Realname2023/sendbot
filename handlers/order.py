@@ -3,7 +3,7 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 from create_bot import bot, operator, url_webhook, method, b24rest_request, method2
-from handlers.states import get_order, FSMOrder, del_item, new_quantity
+from handlers.states import client_order, FSMOrder, del_item, new_quantity
 from handlers import quick_commands as commands
 from keyboards import kb_client, order_kb, cancel_change_kb
 from datetime import datetime
@@ -107,9 +107,16 @@ async def send_order(call: types.CallbackQuery):
         "rows": poses
     }
     response2 = b24rest_request(url_webhook, method2, parametr2)
-    await bot.send_message(operator, order, reply_markup=InlineKeyboardMarkup().add(
-    	InlineKeyboardButton('Взять в работу',
-    						 callback_data=get_order.new(user_id=user_id, status='inwork'))))
+    await bot.send_message(
+        operator, order, reply_markup=InlineKeyboardMarkup().add(
+            InlineKeyboardButton("Уточнить данные заказчика", callback_data=client_order.new(
+                    user_id=user_id))))
+    await commands.delete_cur_order(user_id)
+    await call.message.answer("Ваш заказ отправлен. Пожалуйста, нажмите кнопку'Написать оператору подтвердить'"
+                              "для подтверждения заказа и напишите 1", 
+                              reply_markup=InlineKeyboardMarkup().add(
+            InlineKeyboardButton("Написать оператору подтвердить", url='https://t.me/VTGonlinebot')))
+    await call.message.answer("==================================", reply_markup=kb_client)
     await commands.delete_cur_order(user_id)
     await call.message.answer('Ваш заказ отправлен', reply_markup=kb_client)
     await call.answer('Send')

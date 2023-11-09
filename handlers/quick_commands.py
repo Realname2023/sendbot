@@ -1,5 +1,5 @@
 from asyncpg import UniqueViolationError
-from create_bot import bot
+from create_bot import bot, arenda_items
 from data_base.gino_db import db
 from data_base.base_db import User, Category, \
     Oredrs, Client, CurrentOrder, All_items, Actions
@@ -91,6 +91,8 @@ async def add_current_order(user_item, user_id, item_id, b_id, name, unit,
         quantity2 = current_order.quantity + quantity
         del_quantity2 = current_order.del_quantity + del_quantity
         arenda_time2 = current_order.arenda_time + arenda_time
+        if item_id in arenda_items:
+            sum2 = current_order.del_price*del_quantity2*arenda_time2
         await current_order.update(quantity=quantity2, del_quantity=del_quantity2, 
                                    arenda_time=arenda_time2, sum=sum2).apply()
 
