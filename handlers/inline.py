@@ -33,9 +33,6 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
                                      f'за месяц с залогом по стоимости баллона (40000)',
                                      parse_mode=types.ParseMode.HTML,
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
-                                         [InlineKeyboardButton('Купить',
-                                                               callback_data=buy_item.new(item_id=ret.item_id,
-                                                                                          price=ret.price))],
                                          [InlineKeyboardButton('Аренда',
                                                                callback_data=buy_item.new(item_id=ret.item_id,
                                                                                           price=ret.del_price))],

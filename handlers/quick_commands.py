@@ -90,8 +90,9 @@ async def add_current_order(user_item, user_id, item_id, b_id, name, unit,
         sum2 = current_order.sum + sum
         quantity2 = current_order.quantity + quantity
         del_quantity2 = current_order.del_quantity + del_quantity
-        await current_order.update(quantity=quantity2, del_quantity=del_quantity2,
-                                   sum=sum2).apply()
+        arenda_time2 = current_order.arenda_time + arenda_time
+        await current_order.update(quantity=quantity2, del_quantity=del_quantity2, 
+                                   arenda_time=arenda_time2, sum=sum2).apply()
 
 
 async def select_current_orders(user_id):

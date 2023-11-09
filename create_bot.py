@@ -29,8 +29,7 @@ ip = 'localhost'
 operator = 6398627453
 admin = 2006308022
 sender_photo = 6366939865
-arenda_items = ['30', '31', '32', '33', '34', '35',
-            '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46']
+arenda_items = ['59']
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=storage)
