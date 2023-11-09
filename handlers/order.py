@@ -118,7 +118,6 @@ async def send_order(call: types.CallbackQuery):
             InlineKeyboardButton("Написать оператору подтвердить", url='https://t.me/VTGonlinebot')))
     await call.message.answer("==================================", reply_markup=kb_client)
     await commands.delete_cur_order(user_id)
-    await call.message.answer('Ваш заказ отправлен', reply_markup=kb_client)
     await call.answer('Send')
 
 
