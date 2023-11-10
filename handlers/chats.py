@@ -12,7 +12,7 @@ all_commands = ['/отмена', '/start', '/stop', '/Закрыть_чат', '/
 @dp.callback_query_handler(client_order.filter())
 async def accept_order(call: types.CallbackQuery, callback_data: dict):
     user = int(callback_data.get("user_id"))
-    await bot.send_message(user, text='Здлавствуйте с Вами не могут связаться наши операторы'
+    await bot.send_message(user, text='Здравствуйте с Вами не могут связаться наши операторы'
                            "пожалуйста нажмите кнопку 'Написать оператору' и укажите правильно Ваши данные:"
                            "номер телефона и адрес доставки", 
                            reply_markup=InlineKeyboardMarkup().add(

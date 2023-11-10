@@ -95,10 +95,12 @@ async def send_order(call: types.CallbackQuery):
     for ret in cur_order:
         if ret.del_quantity == 0:
             quantity = ret.quantity
+            price = ret.price
         else:
             quantity = ret.del_quantity
+            price = ret.del_price
         pos = {"PRODUCT_ID": ret.b_id,
-                "PRICE": float(ret.price),
+                "PRICE": float(price),
                 "QUANTITY": quantity
                 }
         poses.append(pos)

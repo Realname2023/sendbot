@@ -82,7 +82,7 @@ async def voices(call: types.CallbackQuery):
     await call.message.answer("Полезные ссылки:\n"
                               "https://wa.me/message/6KT7KF6BOGEJA1\n"
                               "\n"
-                              "https://www.instagram.com/vtg_gas/\n"
+                              "https://www.instagram.com/vtg_gaz/\n"
                               "\n"
                               "vostoktehgaz@mail.ru\n"
                               "\n"
