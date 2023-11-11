@@ -68,6 +68,7 @@ async def cancel_order(message: types.Message, state: FSMContext):
 async def send_order(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
+    tittle = call.from_user.full_name
     client = await commands.select_client(user_id)
     # client_id = client.user_id
     client_city = client.city
@@ -82,14 +83,20 @@ async def send_order(call: types.CallbackQuery):
     # message_id = call.message.message_id
     #  mess = await bot.forward_message(operator, from_chat_id=call.from_user.id, message_id=message_id)
     parametr = {"fields": {
-    "TITLE": client_org_name,
+    "TITLE": tittle,
     "SOURCE_ID": 'UC_SLN7SG',
     "COMPANY_TITLE": client_org_name,
     "PHONE": [{'VALUE': client_phone, "VALUE_TYPE": "WORK"}],
     "ADDRESS": client_address,
     "ADDRESS_CITY": client_city,
+    "IM": [
+    {	"VALUE": "Telegram",
+	    "VALUE_USERNAME": tittle,
+        "VALUE_TYPE": "WORK"
+    }
+    ],
     "COMMENTS": order}}
-    response = b24rest_request(url_webhook, method, parametr)
+    response = await b24rest_request(url_webhook, method, parametr)
     lead_id = str(response.get('result'))
     poses = []
     for ret in cur_order:
@@ -108,7 +115,7 @@ async def send_order(call: types.CallbackQuery):
         "id": lead_id,
         "rows": poses
     }
-    response2 = b24rest_request(url_webhook, method2, parametr2)
+    await b24rest_request(url_webhook, method2, parametr2)
     await bot.send_message(
         operator, order, reply_markup=InlineKeyboardMarkup().add(
             InlineKeyboardButton("Уточнить данные заказчика", callback_data=client_order.new(

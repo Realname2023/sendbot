@@ -1,4 +1,5 @@
-import requests
+# import requests
+import aiohttp
 import os
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
@@ -38,8 +39,17 @@ url_webhook = 'https://vostoktekhgaz.bitrix24.kz/rest/4053/zke9kazjd7b4eeub/'
 method = 'crm.lead.add'
 method2 ='crm.lead.productrows.set'
 
-def b24rest_request(url_webhook: str, method: str, parametr: dict) -> dict:
+async def b24rest_request(url_webhook: str, method: str, parametr: dict) -> dict:
     url = url_webhook + method + '.json?'
-    response = requests.post(url, verify=False, json=parametr)
-    print(response) 
-    return response.json()
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, json=parametr) as response:
+            response_data = await response.json()
+            if response.status == 200:
+                # Запрос выполнен успешно
+                print(f"Ответ сервера: {response_data}")
+            else:
+                print(f"Ошибка при выполнении запроса. Статус код: {response_data}") 
+    return response_data
+    # response = requests.post(url, verify=False, json=parametr)
+    # print(response) 
+    # return response.json()
