@@ -107,17 +107,26 @@ async def select_current_order(user_item):
     return current_order
 
 
-async def change_quantity_cur_order(user_item, new_quantity, new_sum, delivery):
+async def change_quantity_cur_order(user_item, new_quantity, delivery):
     current_order = await CurrentOrder.query.where(
         CurrentOrder.user_item == user_item).gino.first()
     if delivery == 0:
         sum1 = current_order.del_quantity * current_order.del_price
-        sum2 = sum1 + new_sum
-        await current_order.update(quantity=new_quantity, sum=sum2).apply()
+        sum2 = current_order.price*new_quantity
+        new_sum = sum1 + sum2
+        await current_order.update(quantity=new_quantity, sum=new_sum).apply()
     else:
         sum1 = current_order.quantity * current_order.price
-        sum2 = sum1 + new_sum
-        await current_order.update(del_quantity=new_quantity, sum=sum2).apply()
+        sum2 = current_order.del_price*new_quantity
+        new_sum = sum1 + sum2
+        await current_order.update(del_quantity=new_quantity, sum=new_sum).apply()
+
+
+async def change_arenda_time(user_item, new_arenda_time):
+    current_order = await CurrentOrder.query.where(
+        CurrentOrder.user_item == user_item).gino.first()
+    new_sum = current_order.del_price*current_order.del_quantity*new_arenda_time
+    await current_order.update(arenda_time=new_arenda_time, sum=new_sum).apply()
 
 
 async def set_comment(user_id, comment):
