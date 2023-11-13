@@ -92,7 +92,7 @@ async def send_order(call: types.CallbackQuery):
     "IM": [
     {	"VALUE": "Telegram",
         "VALUE_ID": str(user_id),
-	    "VALUE_USERNAME": tittle,
+	    # "VALUE_USERNAME": tittle,
         "VALUE_TYPE": "WORK"
     }
     ],
