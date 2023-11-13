@@ -110,7 +110,11 @@ async def select_current_order(user_item):
 async def change_quantity_cur_order(user_item, new_quantity, delivery):
     current_order = await CurrentOrder.query.where(
         CurrentOrder.user_item == user_item).gino.first()
-    if delivery == 0:
+    if current_order.item_id in arenda_items:
+        new_sum = current_order.del_price*new_quantity*current_order.arenda_time
+        print(current_order.del_price, new_quantity, new_sum)
+        await current_order.update(del_quantity=new_quantity, sum=new_sum).apply()
+    elif delivery == 0:
         sum1 = current_order.del_quantity * current_order.del_price
         sum2 = current_order.price*new_quantity
         new_sum = sum1 + sum2
