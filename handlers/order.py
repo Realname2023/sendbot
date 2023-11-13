@@ -91,6 +91,7 @@ async def send_order(call: types.CallbackQuery):
     "ADDRESS_CITY": client_city,
     "IM": [
     {	"VALUE": "Telegram",
+        "VALUE_ID": str(user_id),
 	    "VALUE_USERNAME": tittle,
         "VALUE_TYPE": "WORK"
     }
