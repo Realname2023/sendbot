@@ -203,7 +203,7 @@ async def callback_new_quantity(call: types.CallbackQuery, callback_data: dict, 
                         InlineKeyboardButton(
                             f'Изменить количество {item.name}',
                             callback_data=new_quantity.new(
-                                user_item=item.user_item, delivery=1
+                                user_item=item.user_item, delivery=3
                             ),
                         ),
                         InlineKeyboardButton(
@@ -224,7 +224,7 @@ async def callback_new_quantity(call: types.CallbackQuery, callback_data: dict, 
                                reply_markup=cancel_change_kb)
         await FSMOrder.new_quantity.set()
         await state.update_data(order_item_id=user_item)
-    elif int(delivery) == 1:
+    elif int(delivery) in [1, 3]:
         await state.update_data(order_delivery=1)
         await call.answer(text=f'Укажите новое количество {item.name}.', show_alert=True)
         await bot.send_message(user_id, text=f"Укажите новое количество {item.name}",
@@ -252,7 +252,7 @@ async def set_new_arenda_time(call: types.CallbackQuery,
     await call.answer(
             text=f"Укажите новое время аренды мес. {item.name}.", show_alert=True
         )
-    await call.message.answer(f"Укажите новое время аренды мес. {item.name}")
+    await call.message.answer(f"Укажите новое время аренды мес. {item.name}", reply_markup=cancel_change_kb)
     await FSMOrder.new_arenda_time.set()
     await state.update_data(order_item_id=user_item)
 

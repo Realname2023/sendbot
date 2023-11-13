@@ -121,8 +121,6 @@ async def load_cat_back(message: types.Message, state: FSMContext):
         description = data.get("description")
         price = data.get("price")
         del_price= data.get("del_price")
-        if del_price == 0:
-            del_price = None
         item_city = data.get("item_city")
         item = All_items(item_id=item_id, photo=photo, name=name, unit=unit, 
                          description=description, price=price, del_price=del_price,

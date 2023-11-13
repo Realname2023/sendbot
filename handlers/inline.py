@@ -16,7 +16,7 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
             ret = await commands.select_item(call_data)
             await bot.send_message(call.from_user.id,
                                    text='Наше предложение')
-            if ret.del_price == None:
+            if ret.del_price == 0:
                 await bot.send_photo(call.from_user.id, ret.photo,
                                      f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
                                      f'\nЦена {ret.price} за {ret.unit} тенге',
