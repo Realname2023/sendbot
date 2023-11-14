@@ -1,4 +1,5 @@
 import pytz
+import re
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
@@ -68,6 +69,7 @@ async def cancel_order(message: types.Message, state: FSMContext):
 async def send_order(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
+    id_bot = str(user_id)
     tittle = call.from_user.full_name
     client = await commands.select_client(user_id)
     # client_id = client.user_id
@@ -89,13 +91,9 @@ async def send_order(call: types.CallbackQuery):
     "PHONE": [{'VALUE': client_phone, "VALUE_TYPE": "WORK"}],
     "ADDRESS": client_address,
     "ADDRESS_CITY": client_city,
-    "IM": [
-    {	"VALUE": "Telegram",
-        "VALUE_ID": str(user_id),
-	    # "VALUE_USERNAME": tittle,
-        "VALUE_TYPE": "WORK"
-    }
-    ],
+    "IM": [{	
+        "VALUE_TYPE": "Telegram",
+        "VALUE": f"imol|telegrambot|5|{id_bot}|4153"}],
     "COMMENTS": order}}
     response = await b24rest_request(url_webhook, method, parametr)
     lead_id = str(response.get('result'))
@@ -261,6 +259,8 @@ async def set_new_arenda_time(call: types.CallbackQuery,
 # @dp.message_handler(state=FSMOrder.new_quantity)
 async def load_new_quantity(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
+    pat = r"[^0-9]"
+    answer = re.sub(pat, "", message.text)
     try:
         answer = int(message.text)
     except ValueError:
@@ -281,6 +281,8 @@ async def load_new_quantity(message: types.Message, state: FSMContext):
 # @dp.message_handler(state=FSMOrder.new_arenda_time)
 async def load_new_arenda_time(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
+    pat = r"[^0-9]"
+    answer = re.sub(pat, "", message.text)
     try:
         answer = int(message.text)
     except ValueError:

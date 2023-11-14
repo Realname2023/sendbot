@@ -149,13 +149,21 @@ async def indicate_org(message: types.Message, state: FSMContext):
 async def indicate_address(message: types.Message, state: FSMContext):
     address = message.text
     await state.update_data(address=address)
-    await message.answer("Укажите Ваш номер телефона")
+    await message.answer("Укажите Ваш номер телефона. Номер телефона должен начинаться с 8"
+                         " или +7 и содержать 11 цифр")
     await FSMClient.phone.set()
 
 
 # @dp.message_handler(state=FSMClient.phone)
 async def indicate_phone(message: types.Message, state: FSMContext):
-    phone = message.text
+    pat = r"[^0-9]"
+    answer = re.sub(pat, "", message.text)
+    pattern = r"^(8|7)[\d]{10}$"
+    if bool(re.match(pattern, answer)):
+        phone = answer
+    else:
+        await message.answer("Пожалуйста, укажите правильно Ваш номер телефона")
+        return
     user_id = message.from_user.id
     data = await state.get_data()
     city = data.get("city")

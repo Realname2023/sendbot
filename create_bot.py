@@ -25,7 +25,7 @@ arenda_items = ['59']
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
-url_webhook = 'https://vostoktekhgaz.bitrix24.kz/rest/4053/zke9kazjd7b4eeub/'
+url_webhook = 'https://vostoktekhgaz.bitrix24.kz/rest/1/wwkcsklhii78b1r5/'
 method = 'crm.lead.add'
 method2 ='crm.lead.productrows.set'
 
