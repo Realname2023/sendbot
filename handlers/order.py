@@ -30,7 +30,9 @@ async def create_order(user_id):
         strpos = ""
         comment = ""
         for ret in cur_orders:
-            if ret.arenda_time != 0:
+            if ret.arenda_time != 0 and ret.del_quantity == 0:
+                pos = f"Аренда по договору {ret.name}\n в количестве {ret.quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
+            elif ret.arenda_time != 0 and ret.quantity == 0:
                 pos = f"Аренда {ret.name}\n в количестве {ret.del_quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.del_quantity == 0:
                 pos = f'{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n'

@@ -9,7 +9,7 @@ kb_client = InlineKeyboardMarkup(row_width=2, inline_keyboard=[
                           callback_data=select_cat.new(cat='country'))],
     [InlineKeyboardButton('Криогенные жидкости', callback_data='liquid'),
     InlineKeyboardButton('Оборудование',
-                          callback_data=select_cat.new('equipment'))],
+                          callback_data=select_cat.new('eq_cat'))],
     [InlineKeyboardButton('Запчасти и услуги', callback_data=select_cat.new('complects'))],
     [InlineKeyboardButton(text='Моя корзина', callback_data='myorders'),
     InlineKeyboardButton(text='Акции', callback_data='actions')],

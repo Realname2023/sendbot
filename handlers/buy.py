@@ -1,7 +1,7 @@
 import re
 from aiogram.dispatcher import FSMContext
 from aiogram import types, Dispatcher
-from create_bot import bot, arenda_items
+from create_bot import bot, arenda_items, arenda_eq
 from data_base.base_db import Client
 from handlers import quick_commands as commands
 from handlers.order import create_order
@@ -67,10 +67,10 @@ async def load_quantity(message: types.Message, state: FSMContext):
     item_id = data.get("buy_item_id")
     delivery = data.get("delivery")
     name = data.get('item')
-    if item_id in arenda_items and delivery == 1:
+    if (item_id in arenda_items and delivery == 1) or item_id in arenda_eq:
         await message.answer(f"Укажите на сколько месяцев Вы арендуете {name}")
         await FSMClient.buy_arenda_time.set()
-    elif client == None:
+    elif client is None:
         await message.answer("Укажите нименование Вашей организации  если Вы физ лицо, то напишите как к Вам обращаться")
         await FSMClient.org_name.set()
     else:
@@ -112,7 +112,7 @@ async def indicate_arenda_time(message: types.Message, state: FSMContext):
         return
     await state.update_data(buy_arenda_time=answer)
     client = await commands.select_client(user_id)
-    if client == None:
+    if client is None:
         await message.answer("Укажите нименование Вашей организации  если Вы физ лицо, то напишите как к Вам обращаться")
         await FSMClient.org_name.set()
     else:
@@ -127,9 +127,15 @@ async def indicate_arenda_time(message: types.Message, state: FSMContext):
         arenda_time = int(data.get("buy_arenda_time"))
         unit = data.get("buy_unit")
         quantity = 0
-        sum = del_price*del_quantity*arenda_time
         city = data.get("city")
+        delivery = data.get("delivery")
         comment = ''
+        if item_id in arenda_eq and delivery == 0:
+            quantity = del_quantity
+            del_quantity = 0
+            sum = price*quantity*arenda_time
+        else:
+            sum = del_price*del_quantity*arenda_time
         await commands.add_current_order(user_item, user_id, item_id, b_id, name, unit,
                                          price, del_price, quantity, del_quantity,
                                          arenda_time, sum, city, comment)
@@ -184,7 +190,11 @@ async def indicate_phone(message: types.Message, state: FSMContext):
     arenda_time = data.get("buy_arenda_time")
     del_quantity = 0
     quantity = 0
-    if item_id in arenda_items and delivery == 1:
+    if item_id in arenda_eq and delivery == 0:
+        arenda_time = int(arenda_time)
+        quantity = quant
+        sum = price*quantity*arenda_time
+    elif (item_id in arenda_items or item_id in arenda_eq) and delivery == 1:
         arenda_time = int(arenda_time)
         del_quantity = quant
         sum = del_price*del_quantity*arenda_time

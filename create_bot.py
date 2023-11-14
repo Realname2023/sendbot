@@ -21,6 +21,7 @@ operator = 6398627453
 admin = 2006308022
 sender_photo = 6366939865
 arenda_items = ['59']
+arenda_eq = ['60', '61', '62', '63', '64', '65', '66']
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=storage)
