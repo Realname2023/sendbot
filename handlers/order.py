@@ -119,7 +119,6 @@ async def send_order(call: types.CallbackQuery):
         operator, order, reply_markup=InlineKeyboardMarkup().add(
             InlineKeyboardButton("Уточнить данные заказчика", callback_data=client_order.new(
                     user_id=user_id))))
-    await commands.delete_cur_order(user_id)
     await call.message.answer("Ваш заказ отправлен. Пожалуйста, нажмите кнопку'Написать оператору подтвердить'"
                               "для подтверждения заказа и напишите 1", 
                               reply_markup=InlineKeyboardMarkup().add(
