@@ -3,8 +3,8 @@ import re
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
-from create_bot import bot, operator, url_webhook, method, b24rest_request, method2, arenda_items
-from handlers.states import client_order, FSMOrder, del_item, new_quantity, new_arenda_time
+from create_bot import bot, operator, url_webhook, method, b24rest_request, method2, arenda_items, arenda_eq
+from handlers.states import client_order, FSMOrder, del_item, new_quantity
 from handlers import quick_commands as commands
 from keyboards import kb_client, order_kb, cancel_change_kb
 from datetime import datetime
@@ -35,13 +35,15 @@ async def create_order(user_id):
             elif ret.arenda_time != 0 and ret.quantity == 0:
                 pos = f"Аренда {ret.name}\n в количестве {ret.del_quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.del_quantity == 0:
-                pos = f'{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n'
+                pos = f"{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.quantity == 0:
-                pos = f'{ret.name}\n в количестве {ret.del_quantity} {ret.unit} с доставкой\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n'
+                pos = f"{ret.name}\n в количестве {ret.del_quantity} {ret.unit} с доставкой\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             else:
-                pos = f'{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n' \
-                      f'в количестве {ret.del_quantity} {ret.unit} с доставкой\n по цене {ret.del_price} тенге\n' \
-                      f' на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n'
+                pos = (
+                    f"{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n"
+                    f"в количестве {ret.del_quantity} {ret.unit} с доставкой\n по цене {ret.del_price} тенге\n"
+                    f" на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
+                )
             strpos = strpos + pos
             asum = asum + ret.sum
             comment = comment + ret.comment
@@ -171,19 +173,19 @@ async def change_quantity(call: types.CallbackQuery):
     cur_orders = await commands.select_current_orders(user_id)
     keyboard = InlineKeyboardMarkup(row_width=1)
     for ret in cur_orders:
-        if ret.del_quantity == 0:
-            keyboard.insert(InlineKeyboardButton(ret.name,
-                                             callback_data=new_quantity.new(user_item=ret.user_item, delivery=0)))
-        elif ret.quantity == 0:
-            keyboard.insert(InlineKeyboardButton(ret.name,
-                                                 callback_data=new_quantity.new(user_item=ret.user_item, delivery=1)))
-        else:
-            keyboard.insert(InlineKeyboardButton(ret.name,
-                                                 callback_data=new_quantity.new(user_item=ret.user_item, delivery=2)))
-    keyboard.add(InlineKeyboardButton('Назад', callback_data='myorders'))
-    await call.message.answer('Выберите товар количество которого вы хотите изменить ',
-                              reply_markup=keyboard)
-    await call.answer('change')
+        keyboard.insert(
+            InlineKeyboardButton(
+                ret.name,
+                callback_data=new_quantity.new(user_item=ret.user_item, 
+                                                quantity=ret.quantity,
+                                                del_quantity=ret.del_quantity)
+            )
+        )
+    keyboard.add(InlineKeyboardButton("Назад", callback_data="myorders"))
+    await call.message.answer(
+        "Выберите товар количество или время аренды, которого вы хотите изменить ", reply_markup=keyboard
+    )
+    await call.answer("change")
 
 
 # @dp.callback_query_handler(new_quantity.filter())
@@ -191,70 +193,54 @@ async def callback_new_quantity(call: types.CallbackQuery, callback_data: dict, 
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
     user_item = callback_data.get("user_item")
-    delivery = callback_data.get("delivery")
+    quantity = callback_data.get("quantity")
+    del_quantity = callback_data.get("del_quantity")
     item = await commands.select_current_order(user_item)
-    if int(delivery) == 1 and item.item_id in arenda_items:
-        await call.message.answer(f"Укажите что Вы хотите изменить: количество {item.name}"
-                                  f"или время аренды {item.name}?",
-                                  reply_markup=InlineKeyboardMarkup(
+    if int(del_quantity) != 0 and int(quantity) != 0:
+        await call.message.answer(
+            f"В вашем заказе есть {item.name} c доставкой и без доставки",
+            reply_markup=InlineKeyboardMarkup(
                 row_width=2,
                 inline_keyboard=[
-                    [
-                        InlineKeyboardButton(
-                            f'Изменить количество {item.name}',
+                    [InlineKeyboardButton(
+                            item.name,
                             callback_data=new_quantity.new(
-                                user_item=item.user_item, delivery=3
+                                user_item=item.user_item,
+                                quantity=quantity,
+                                del_quantity=0
                             ),
                         ),
                         InlineKeyboardButton(
-                            f"Изменить время аренды {item.name}",
-                            callback_data=new_arenda_time.new(
-                                user_item=item.user_item
+                            f"{item.name} с доставкой",
+                            callback_data=new_quantity.new(
+                                user_item=item.user_item,
+                                quantity=0,
+                                del_quantity=del_quantity
                             ),
                         ),
                     ],
                     [InlineKeyboardButton("Назад", callback_data="myorders")],
                 ],
-            ),
+            )
         )
-    elif int(delivery) == 0:
-        await state.update_data(order_delivery=0)
-        await call.answer(text=f'Укажите новое количество {item.name}.', show_alert=True)
-        await bot.send_message(user_id, text=f"Укажите новое количество {item.name}",
-                               reply_markup=cancel_change_kb)
-        await FSMOrder.new_quantity.set()
-        await state.update_data(order_item_id=user_item)
-    elif int(delivery) in [1, 3]:
-        await state.update_data(order_delivery=1)
-        await call.answer(text=f'Укажите новое количество {item.name}.', show_alert=True)
-        await bot.send_message(user_id, text=f"Укажите новое количество {item.name}",
-                               reply_markup=cancel_change_kb)
-        await FSMOrder.new_quantity.set()
-        await state.update_data(order_item_id=user_item)
-    else:
-        await call.message.answer(f'В вашем заказе есть {item.name} c доставкой и без доставки',
-                                  reply_markup=InlineKeyboardMarkup(row_width=2, inline_keyboard=[
-                                      [InlineKeyboardButton(item.name,
-                                                            callback_data=new_quantity.new(user_item=item.user_item, delivery=0)),
-                                       InlineKeyboardButton(f'{item.name} с доставкой',
-                                                            callback_data=new_quantity.new(user_item=item.user_item, delivery=1))],
-                                      [InlineKeyboardButton('Назад', callback_data='myorders')]
-                                  ]))
         await call.answer("Choose")
-
-
-# @dp.callback_query_handler(new_arenda_time.filter())
-async def set_new_arenda_time(call: types.CallbackQuery, 
-                              callback_data: dict, state: FSMContext):
-    await call.message.edit_reply_markup()
-    user_item = callback_data.get("user_item")
-    item = await commands.select_current_order(user_item)
-    await call.answer(
-            text=f"Укажите новое время аренды мес. {item.name}.", show_alert=True
+    else:
+        await call.answer(
+            text=f"Укажите новое количество {item.name}.", show_alert=True
         )
-    await call.message.answer(f"Укажите новое время аренды мес. {item.name}", reply_markup=cancel_change_kb)
-    await FSMOrder.new_arenda_time.set()
-    await state.update_data(order_item_id=user_item)
+        await bot.send_message(
+            user_id,
+            text=f"Укажите новое количество {item.name}",
+            reply_markup=cancel_change_kb,
+        )
+        await FSMOrder.new_quantity.set()
+        await state.update_data(order_user_item=user_item)
+        await state.update_data(order_item_id=item.item_id)
+        if int(del_quantity) == 0:
+            await state.update_data(order_delivery=0)
+        
+        else:
+            await state.update_data(order_delivery=1)
 
 
 # @dp.message_handler(state=FSMOrder.new_quantity)
@@ -270,13 +256,20 @@ async def load_new_quantity(message: types.Message, state: FSMContext):
     answer = message.text
     await state.update_data(new_quantity=answer)
     data = await state.get_data()
-    new_quantity = int(data.get('new_quantity'))
-    user_item = data.get('order_item_id')
+    new_quantity = int(data.get("new_quantity"))
+    user_item = data.get("order_user_item")
+    item_id = data.get("order_item_id")
     delivery = data.get("order_delivery")
     await commands.change_quantity_cur_order(user_item, new_quantity, delivery)
-    await message.answer('Количество товара успешно изменено', reply_markup=ReplyKeyboardRemove())
-    await state.finish()
-    await create_order(user_id)
+    await message.answer(
+        "Количество товара успешно изменено", reply_markup=ReplyKeyboardRemove()
+    )
+    if item_id in arenda_eq or item_id in arenda_items:
+        await message.answer("Укажите новое время аренды", reply_markup=cancel_change_kb)
+        await FSMOrder.new_arenda_time.set()
+    else:
+        await state.finish()
+        await create_order(user_id)
 
 
 # @dp.message_handler(state=FSMOrder.new_arenda_time)
@@ -291,7 +284,7 @@ async def load_new_arenda_time(message: types.Message, state: FSMContext):
         return
     answer = message.text
     data = await state.get_data()
-    user_item = data.get("order_item_id")
+    user_item = data.get("order_user_item")
     new_time_arenda = int(answer)
     await commands.change_arenda_time(user_item, new_time_arenda)
     await state.finish()
@@ -301,7 +294,7 @@ async def load_new_arenda_time(message: types.Message, state: FSMContext):
 # @dp.callback_query_handler(text='comment')
 async def comment_user(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
-    await call.message.answer('Напишите комментарий')
+    await call.message.answer('Напишите комментарий', reply_markup=cancel_change_kb)
     await FSMOrder.comment.set()
     await call.answer('comment')
 
@@ -332,19 +325,6 @@ async def client_orders(call: types.CallbackQuery):
     await create_order(user_id)
 
 
-# @dp.callback_query_handler(text='ordershistory')
-async def get_history_orders(call: types.CallbackQuery):
-    await call.message.edit_reply_markup()
-    user_id = call.from_user.id
-    try:
-        orders = await commands.select_order(user_id)
-        await call.message.answer(orders.order_text, parse_mode=types.ParseMode.HTML, reply_markup=kb_client)
-    except:
-        await call.message.answer("Вы еще ничего не заказывали", reply_markup=kb_client)
-    await call.answer('История заказов')
-
-
-
 def register_handlers_order(dp: Dispatcher):
     dp.register_message_handler(cancel_order, state="*", commands=["отменить"])
     dp.register_callback_query_handler(send_order, text="order")
@@ -353,11 +333,10 @@ def register_handlers_order(dp: Dispatcher):
     dp.register_callback_query_handler(delete_item, del_item.filter())
     dp.register_callback_query_handler(change_quantity, text="change")
     dp.register_callback_query_handler(callback_new_quantity, new_quantity.filter())
-    dp.register_callback_query_handler(set_new_arenda_time, new_arenda_time.filter())
     dp.register_message_handler(load_new_quantity, state=FSMOrder.new_quantity)
     dp.register_message_handler(load_new_arenda_time, state=FSMOrder.new_arenda_time)
     dp.register_callback_query_handler(comment_user, text="comment")
     dp.register_message_handler(set_comment, state=FSMOrder.comment)
     dp.register_callback_query_handler(delete_all_items, text="delall")
     dp.register_callback_query_handler(client_orders, text="myorders")
-    dp.register_callback_query_handler(get_history_orders, text="ordershistory")
+    

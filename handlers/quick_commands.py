@@ -1,8 +1,8 @@
 from asyncpg import UniqueViolationError
-from create_bot import bot, arenda_items
+from create_bot import bot, arenda_items, arenda_eq
 from data_base.gino_db import db
 from data_base.base_db import User, Category, \
-    Oredrs, Client, CurrentOrder, All_items, Actions
+    Client, CurrentOrder, All_items, Actions
 
 
 async def add_user(user_id: int, first_name: str, last_name: str, user_name: str, status: str):
@@ -45,30 +45,6 @@ async def select_category_item(call_data):
     return data_button
 
 
-async def select_order(user_id):
-    order = await Oredrs.query.where(Oredrs.user_id==user_id).gino.first()
-    return order
-
-
-async def add_order(user_id, order_text: str, status: str):
-    try:
-        order = Oredrs(user_id=user_id, order_text=order_text, status=status)
-        await order.create()
-    except UniqueViolationError:
-        order = await select_order(user_id)
-        order_text = order.order_text + '\n' + "=======================" + '\n' + order_text
-        await order.update(order_text=order_text).apply()
-
-
-async def delete_order(user_id):
-    await Oredrs.delete.where(Oredrs.user_id==user_id).gino.first()
-
-
-async def select_all_orders():
-    orders = await Oredrs.query.gino.all()
-    return orders
-
-
 async def select_client(user_id):
     client = await Client.query.where(Client.user_id==user_id).gino.first()
     return client
@@ -87,14 +63,27 @@ async def add_current_order(user_item, user_id, item_id, b_id, name, unit,
         await current_order.create()
     except UniqueViolationError:
         current_order = await CurrentOrder.query.where(CurrentOrder.user_item==user_item).gino.first()
-        sum2 = current_order.sum + sum
-        quantity2 = current_order.quantity + quantity
-        del_quantity2 = current_order.del_quantity + del_quantity
-        arenda_time2 = current_order.arenda_time + arenda_time
-        if item_id in arenda_items:
-            sum2 = current_order.del_price*del_quantity2*arenda_time2
-        await current_order.update(quantity=quantity2, del_quantity=del_quantity2, 
-                                   arenda_time=arenda_time2, sum=sum2).apply()
+        if current_order.item_id in arenda_eq and current_order.quantity != 0 and del_quantity != 0:
+            await bot.send_message(current_order.user_id, "В вашем заказе уже есть арешда по договору."
+                                                            "Если хотите арендовать без договора, "
+                                                            "удалите аренлу по договору и сделайте заказ без договора")
+        elif current_order.item_id in arenda_eq and current_order.del_quantity != 0 and quantity != 0:
+            await bot.send_message(current_order.user_id, "В вашем заказе уже есть арешда без договора."
+                                                            "Если хотите арендовать по договору, "
+                                                            "удалите аренлу без договора и сделайте заказ по договору")
+        else:
+            new_sum = current_order.sum + sum
+            quantity2 = current_order.quantity + quantity
+            del_quantity2 = current_order.del_quantity + del_quantity
+            arenda_time2 = current_order.arenda_time + arenda_time
+            if item_id in arenda_items:
+                new_sum = current_order.del_price*del_quantity2*arenda_time2
+            if item_id in arenda_eq:
+                sum1 = current_order.price*quantity2*arenda_time2
+                sum2 = current_order.del_price*del_quantity2*arenda_time2
+                new_sum = sum1 + sum2 
+            await current_order.update(quantity=quantity2, del_quantity=del_quantity2, 
+                                    arenda_time=arenda_time2, sum=new_sum).apply()
 
 
 async def select_current_orders(user_id):
@@ -110,10 +99,12 @@ async def select_current_order(user_item):
 async def change_quantity_cur_order(user_item, new_quantity, delivery):
     current_order = await CurrentOrder.query.where(
         CurrentOrder.user_item == user_item).gino.first()
-    if current_order.item_id in arenda_items:
+    if current_order.item_id in arenda_items or (current_order.item_id in arenda_eq and delivery == 1):
         new_sum = current_order.del_price*new_quantity*current_order.arenda_time
-        print(current_order.del_price, new_quantity, new_sum)
         await current_order.update(del_quantity=new_quantity, sum=new_sum).apply()
+    elif current_order.item_id in arenda_eq and delivery == 0:
+        new_sum = current_order.price*new_quantity*current_order.arenda_time
+        await current_order.update(quantity=new_quantity, sum=new_sum).apply()
     elif delivery == 0:
         sum1 = current_order.del_quantity * current_order.del_price
         sum2 = current_order.price*new_quantity
