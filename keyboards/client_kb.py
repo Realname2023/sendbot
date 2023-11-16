@@ -7,7 +7,7 @@ kb_client = InlineKeyboardMarkup(row_width=2, inline_keyboard=[
     [InlineKeyboardButton(text='Газы', callback_data=select_cat.new(cat='cities')),
     InlineKeyboardButton('Баллоны для газов',
                           callback_data=select_cat.new(cat='country'))],
-    [InlineKeyboardButton('Криогенные жидкости', callback_data='liquid'),
+    [InlineKeyboardButton('Криогенные жидкости', url="https://wa.me/message/6KT7KF6BOGEJA1"),
     InlineKeyboardButton('Оборудование',
                           callback_data=select_cat.new('eq_cat'))],
     [InlineKeyboardButton('Запчасти и услуги', callback_data=select_cat.new('complects'))],

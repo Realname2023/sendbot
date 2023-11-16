@@ -120,7 +120,9 @@ async def change_quantity_cur_order(user_item, new_quantity, delivery):
 async def change_arenda_time(user_item, new_arenda_time):
     current_order = await CurrentOrder.query.where(
         CurrentOrder.user_item == user_item).gino.first()
-    new_sum = current_order.del_price*current_order.del_quantity*new_arenda_time
+    sum1 = current_order.price*current_order.quantity*new_arenda_time
+    sum2 = current_order.del_price*current_order.del_quantity*new_arenda_time
+    new_sum = sum1 + sum2
     await current_order.update(arenda_time=new_arenda_time, sum=new_sum).apply()
 
 

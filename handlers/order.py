@@ -31,9 +31,9 @@ async def create_order(user_id):
         comment = ""
         for ret in cur_orders:
             if ret.arenda_time != 0 and ret.del_quantity == 0:
-                pos = f"Аренда по договору {ret.name}\n в количестве {ret.quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
+                pos = f"{ret.name} по договору\nв количестве {ret.quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.arenda_time != 0 and ret.quantity == 0:
-                pos = f"Аренда {ret.name}\n в количестве {ret.del_quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
+                pos = f"{ret.name}\n в количестве {ret.del_quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.del_quantity == 0:
                 pos = f"{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.quantity == 0:
@@ -339,4 +339,3 @@ def register_handlers_order(dp: Dispatcher):
     dp.register_message_handler(set_comment, state=FSMOrder.comment)
     dp.register_callback_query_handler(delete_all_items, text="delall")
     dp.register_callback_query_handler(client_orders, text="myorders")
-    

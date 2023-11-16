@@ -29,8 +29,8 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
             elif ret.item_id in arenda_items:
                 await bot.send_photo(call.from_user.id, ret.photo,
                                      f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
-                                     f'\nЦена: {ret.price} тенге за {ret.unit}\nАренда: {ret.del_price} тенге'
-                                     f'за месяц с залогом по стоимости баллона (40000)',
+                                     f'\nАренда: {ret.del_price} тенге за {ret.unit}'
+                                     f'в месяц с залогом по стоимости баллона (40000)',
                                      parse_mode=types.ParseMode.HTML,
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
                                          [InlineKeyboardButton('Аренда',
@@ -40,8 +40,8 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
                                      ]))
             elif ret.item_id in arenda_eq:
                 await bot.send_photo(call.from_user.id, ret.photo,
-                                     f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
-                                     f'\nЦена:\nАренда по договору: {ret.price} тенге в мксяц\n'
+                                     f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city}\n'
+                                     f'Аренда по договору: {ret.price} за {ret.unit} тенге в месяц\n'
                                      f'Аренда без договора {ret.del_price} тенге в мксяц',
                                      parse_mode=types.ParseMode.HTML,
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
