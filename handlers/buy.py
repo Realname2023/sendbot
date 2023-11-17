@@ -171,12 +171,14 @@ async def indicate_phone(message: types.Message, state: FSMContext):
         await message.answer("Пожалуйста, укажите правильно Ваш номер телефона")
         return
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    full_name = message.from_user.full_name
     data = await state.get_data()
     city = data.get("city")
     org_name = data.get("org_name")
     address = data.get("address")
     client = Client(user_id=user_id, city=city, org_name=org_name, address=address,
-                    phone=phone)
+                    phone=phone, user_name=user_name, full_name=full_name)
     await client.create()
     item_id = data.get("buy_item_id")
     b_id = data.get("buy_b_id")

@@ -74,13 +74,17 @@ async def send_order(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
     id_bot = str(user_id)
-    tittle = call.from_user.full_name
     client = await commands.select_client(user_id)
     # client_id = client.user_id
     client_city = client.city
     client_org_name = client.org_name
     client_address = client.address
     client_phone = client.phone
+    tittle = client.full_name
+    linc = "не указан"
+    user_name = client.user_name
+    if user_name is not None:
+        linc = f"https://t.me/{user_name}"
     cur_order = await commands.select_current_orders(user_id)
     # status = 'Отправлен'
     order = call.message.text
@@ -94,6 +98,7 @@ async def send_order(call: types.CallbackQuery):
     "COMPANY_TITLE": client_org_name,
     "PHONE": [{'VALUE': client_phone, "VALUE_TYPE": "WORK"}],
     "ADDRESS": client_address,
+    "ADDRESS_2": linc,
     "ADDRESS_CITY": client_city,
     "IM": [{	
         "VALUE_TYPE": "Telegram",

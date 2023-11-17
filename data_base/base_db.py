@@ -20,6 +20,8 @@ class Client(TimedBaseModel):
     org_name = Column(String(1000))
     address = Column(String(1000))
     phone = Column(String(100))
+    user_name = Column(String(100))
+    full_name = Column(String(500))
 
     query: sql.select
 
