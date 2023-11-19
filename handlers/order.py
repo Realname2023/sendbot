@@ -16,7 +16,7 @@ async def create_order(user_id):
     client = await commands.select_client(user_id)
     cur_orders = await commands.select_current_orders(user_id)
     if cur_orders == [] or client == None:
-        await bot.send_message(user_id, 'У Вас еще нет текущих заказов', reply_markup=kb_client)
+        await bot.send_message(user_id, 'У Вас еще нет текущих заказов. Выберите товары и создайте заказ', reply_markup=kb_client)
     else:
         now = datetime.now(tz)
         date_time = now.strftime("%d.%m.%Y %H:%M")
@@ -24,7 +24,7 @@ async def create_order(user_id):
         org_name = client.org_name
         address = client.address
         phone = client.phone
-        info_client = f'{date_time}\n<b>Заказ в корзине от {org_name}  из {client_city}:\n' \
+        info_client = f'{date_time}\n<b>Заказ от {org_name}  из {client_city}:\n' \
             f'организация: {org_name}\nАдрес: {address}\nТелефон: {phone}\n</b>'
         asum = 0
         strpos = ""
@@ -49,8 +49,11 @@ async def create_order(user_id):
             comment = comment + ret.comment
         all_sum = f"Общая сумма Вашей покупки {asum} тенге\n"
         order = info_client + strpos + all_sum + f'Комментарий: {comment}'
-        await bot.send_message(user_id, "Ваша заказ добавлен. Нажмите кнопку 'Отправить заказ'"
-                             "чтобы его отправить, либо напишите дополнение", reply_markup=ReplyKeyboardRemove())
+        await bot.send_message(user_id,
+                               "Ваша заказ добавлен. Нажмите кнопку 'Отправить заказ'"
+                               "чтобы заказать товары, либо дополните заказ, используя остальные кнопки"
+                               ,
+                               reply_markup=ReplyKeyboardRemove())
 
         await bot.send_message(user_id, order, parse_mode=types.ParseMode.HTML,
                              reply_markup=order_kb)
@@ -86,12 +89,7 @@ async def send_order(call: types.CallbackQuery):
     if user_name is not None:
         linc = f"https://t.me/{user_name}"
     cur_order = await commands.select_current_orders(user_id)
-    # status = 'Отправлен'
     order = call.message.text
-    # order_text = order.replace('Заказ в корзине', 'Отправлен заказ')
-    # await commands.add_order(user_id, order_text, status)
-    # message_id = call.message.message_id
-    #  mess = await bot.forward_message(operator, from_chat_id=call.from_user.id, message_id=message_id)
     parametr = {"fields": {
     "TITLE": tittle,
     "SOURCE_ID": 'UC_SLN7SG',
@@ -128,8 +126,8 @@ async def send_order(call: types.CallbackQuery):
         operator, order, reply_markup=InlineKeyboardMarkup().add(
             InlineKeyboardButton("Уточнить данные заказчика", callback_data=client_order.new(
                     user_id=user_id))))
-    await call.message.answer("Ваш заказ отправлен. Пожалуйста, нажмите кнопку'Написать оператору подтвердить'"
-                              "для подтверждения заказа и напишите 1", 
+    await call.message.answer("Ваш заказ отправлен. Пожалуйста, нажмите кнопку 'Написать оператору подтвердить'"
+                              "для подтверждения заказа и напишите какое-нибудь сообщение",
                               reply_markup=InlineKeyboardMarkup().add(
             InlineKeyboardButton("Написать оператору подтвердить", url='https://t.me/VTGonlinebot')))
     await call.message.answer("==================================", reply_markup=kb_client)
@@ -299,7 +297,7 @@ async def load_new_arenda_time(message: types.Message, state: FSMContext):
 # @dp.callback_query_handler(text='comment')
 async def comment_user(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
-    await call.message.answer('Напишите комментарий', reply_markup=cancel_change_kb)
+    await call.message.answer('Напишите Ваш комментарий к заказу', reply_markup=cancel_change_kb)
     await FSMOrder.comment.set()
     await call.answer('comment')
 

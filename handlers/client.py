@@ -2,7 +2,7 @@ from aiogram import types, Dispatcher
 from aiogram.types import InputFile
 from create_bot import bot, operator
 from handlers.throttling import rate_limit
-from keyboards import kb_client, operator_kb
+from keyboards import kb_client
 from handlers import quick_commands as commands
 
 
@@ -13,12 +13,11 @@ async def command_start(message: types.Message):
     chat_id = message.chat.id
     if message.from_user.id == operator:
         await bot.send_photo(chat_id=chat_id, photo=photo)
-        await message.answer('Привет оператор', reply_markup=operator_kb.oper_panel)
+        await message.answer('Привет оператор')
     else:
         try:
-            read = await commands.select_user(message.from_user.id)
-            user = read.user_id
-            await bot.send_photo(chat_id=chat_id, photo=photo, caption='Здравствуйте. Вы написали в компанию ТОО "ВостокТехГаз".Вы можете оставить вашу заявку  и мы обработаем ее в течение часа.',
+            await commands.select_user(message.from_user.id)
+            await bot.send_photo(chat_id=chat_id, photo=photo, caption='Здравствуйте. Вы написали в компанию ТОО "ВостокТехГаз". Вы можете оставить вашу заявку  и мы обработаем ее в течение часа.',
                                  reply_markup=kb_client)
 
         except Exception:
@@ -29,14 +28,14 @@ async def command_start(message: types.Message):
 									status='active'
 									)
             await bot.send_photo(chat_id=chat_id, photo=photo,
-                                 caption='Здравствуйте. Вы написали в компанию ТОО "ВостокТехГаз".Вы можете оставить вашу заявку  и мы обработаем ее в течение часа.',
+                                 caption='Здравствуйте. Вы написали в компанию ТОО "ВостокТехГаз". Вы можете оставить вашу заявку  и мы обработаем ее в течение часа.',
                                  reply_markup=kb_client)
 
 
 # @dp.callback_query_handler(text='adres')
 async def show_place(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
-    await call.message.answer("Адреса:\nг. г. Семей, ул. Джангильдина 82/1, район областной больницы\n"
+    await call.message.answer("Адреса:\nг. Семей, ул. Джангильдина 82/1, район областной больницы\n"
         "https://go.2gis.com/us0av\n"
         "\n"
         "г. Усть-Каменогорск, ул. Абая 181, возле рынка 'Дина'\n"
@@ -80,20 +79,21 @@ async def actions(call: types.CallbackQuery):
 async def voices(call: types.CallbackQuery):
     await call.message.edit_reply_markup()
     await call.message.answer("Полезные ссылки:\n"
+                              "WhatsApp\n"
                               "https://wa.me/message/6KT7KF6BOGEJA1\n"
-                              "\n"
+                              "Instagram\n"
                               "https://www.instagram.com/vtg_gaz/\n"
-                              "\n"
+                              "email\n"
                               "vostoktehgaz@mail.ru\n"
                               "\n"
                               "Отзывы можно оставить по ссылкам:\n"
-                              "\n"
+                              "Семей:\n"
                               "https://go.2gis.com/us0av\n"
-                              "\n"
+                              "Усть-Каменогорск:\n"
                               "https://go.2gis.com/o9b30v\n"
-                              "\n"
-                              "https://go.2gis.com/o9b30v\n"
-                              "\n"
+                              "Павлодар:\n"
+                              "https://go.2gis.com/hdsq0\n"
+                              "Астана:\n"
                               "https://go.2gis.com/xhrt6",
                               reply_markup=kb_client)
 

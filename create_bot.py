@@ -15,7 +15,6 @@ URL_APP = 'https://deplbot-0e88a7540a4d.herokuapp.com/'
 
 POSTGREURI = str(os.getenv("DATABASE_URL"))
 
-# ip=os.getenv("ip")
 ip = 'localhost'
 operator = 6398627453
 admin = 2006308022

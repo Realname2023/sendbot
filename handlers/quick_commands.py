@@ -1,6 +1,5 @@
 from asyncpg import UniqueViolationError
 from create_bot import bot, arenda_items, arenda_eq
-from data_base.gino_db import db
 from data_base.base_db import User, Category, \
     Client, CurrentOrder, All_items, Actions
 
@@ -14,19 +13,9 @@ async def add_user(user_id: int, first_name: str, last_name: str, user_name: str
         print("Пользователь не добавлен")
 
 
-async def select_all_users():
-    all_users = await User.query.gino.all()
-    return all_users
-
-
 async def select_user(user_id):
     user = await User.query.where(User.user_id == user_id).gino.first()
     return user
-
-
-async def select_all_items():
-    all_items = await All_items.query.gino.all()
-    return all_items
 
 
 async def select_item(item_id):
@@ -37,11 +26,6 @@ async def select_item(item_id):
 async def select_category(call_data):
     data_button = await Category.query.where(Category.callback == call_data).gino.all()
     data_button.sort(key=lambda x: x.id)
-    return data_button
-
-
-async def select_category_item(call_data):
-    data_button = await Category.query.where(Category.callback == call_data).gino.first()
     return data_button
 
 
@@ -64,13 +48,13 @@ async def add_current_order(user_item, user_id, item_id, b_id, name, unit,
     except UniqueViolationError:
         current_order = await CurrentOrder.query.where(CurrentOrder.user_item==user_item).gino.first()
         if current_order.item_id in arenda_eq and current_order.quantity != 0 and del_quantity != 0:
-            await bot.send_message(current_order.user_id, "В вашем заказе уже есть арешда по договору."
+            await bot.send_message(current_order.user_id, "В вашем заказе уже есть аренда по договору."
                                                             "Если хотите арендовать без договора, "
-                                                            "удалите аренлу по договору и сделайте заказ без договора")
+                                                            "удалите аренду по договору и создайте заказ без договора")
         elif current_order.item_id in arenda_eq and current_order.del_quantity != 0 and quantity != 0:
             await bot.send_message(current_order.user_id, "В вашем заказе уже есть арешда без договора."
                                                             "Если хотите арендовать по договору, "
-                                                            "удалите аренлу без договора и сделайте заказ по договору")
+                                                            "удалите аренду без договора и создайте заказ по договору")
         else:
             new_sum = current_order.sum + sum
             quantity2 = current_order.quantity + quantity

@@ -14,8 +14,6 @@ async def on_startup(dp):
     print('Бот вышел в онлайн')
     print('Connecting to POSTGRESQL')
     await db_startup(dp)
-    # # print('Очистка таблиц')
-    # # await db.gino.drop_all()
     print('Сшздание таблиц')
     await db.gino.create_all()
     print('Готово')
@@ -32,7 +30,6 @@ buy.register_handlers_buy(dp)
 inline.register_handlers_inline(dp)
 order.register_handlers_order(dp)
 
-# executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
 executor.start_webhook(
     dispatcher=dp,
     webhook_path='',

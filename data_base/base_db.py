@@ -69,15 +69,6 @@ class Category(TimedBaseModel):
     query: sql.select
 
 
-class Oredrs(TimedBaseModel):
-    __tablename__ = 'orders'
-    user_id = Column(BigInteger, primary_key=True)
-    order_text = Column(String(10000))
-    status = Column(String(100))
-
-    query: sql.select
-
-
 class CurrentOrder(TimedBaseModel):
     __tablename__ = 'current_orders'
     user_item = Column(String(100), primary_key=True)

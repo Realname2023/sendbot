@@ -15,11 +15,11 @@ async def cancel_buy(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:
         await message.answer('Ok', reply_markup=ReplyKeyboardRemove())
-        await message.answer('Выберите товары', reply_markup=kb_client)
+        await message.answer('Выберите товары и создайте заказ', reply_markup=kb_client)
         return
     await state.finish()
     await message.answer('Ok', reply_markup=ReplyKeyboardRemove())
-    await message.answer('Выберите товары', reply_markup=kb_client)
+    await message.answer('Выберите товары и создайте заказ', reply_markup=kb_client)
 
 
 # @dp.callback_query_handler(buy_item.filter())
@@ -34,7 +34,7 @@ async def callback_buy(call: types.CallbackQuery, callback_data: dict, state: FS
     b_id = read.b_id
     await call.answer(text=f'Укажите количество {unit} {item}.', show_alert=True)
     await call.message.edit_reply_markup()
-    await bot.send_message(user, text=f"Укажие количество {unit} {item}", reply_markup=cancel_buy_kb)
+    await bot.send_message(user, text=f"Укажите количество {unit} {item}", reply_markup=cancel_buy_kb)
     await FSMClient.buy_quantity.set()
     await state.update_data(buy_item_id=item_id)
     await state.update_data(buy_b_id=b_id)
@@ -108,7 +108,7 @@ async def indicate_arenda_time(message: types.Message, state: FSMContext):
     try:
         answer = int(answer)
     except ValueError:
-        await message.answer("Укажите количество в цифрах")
+        await message.answer("Укажите время аренды в цифрах")
         return
     await state.update_data(buy_arenda_time=answer)
     client = await commands.select_client(user_id)
@@ -215,6 +215,7 @@ async def indicate_phone(message: types.Message, state: FSMContext):
                                      sum, city, comment)
     await state.finish()
     await create_order(user_id)
+
 
 def register_handlers_buy(dp: Dispatcher):
     dp.register_message_handler(cancel_buy, state="*", commands=['отмена'])

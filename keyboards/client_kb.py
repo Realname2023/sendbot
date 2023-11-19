@@ -2,20 +2,35 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from handlers.states import select_cat
 
+# kb_client = InlineKeyboardMarkup(row_width=2, inline_keyboard=[
+#     [InlineKeyboardButton(text='Газы', callback_data=select_cat.new(cat='cities')),
+#     InlineKeyboardButton('Баллоны для газов',
+#                           callback_data=select_cat.new(cat='country'))],
+#     [InlineKeyboardButton('Криогенные жидкости', url="https://wa.me/message/6KT7KF6BOGEJA1"),
+#     InlineKeyboardButton('Оборудование',
+#                           callback_data=select_cat.new('eq_cat'))],
+#     [InlineKeyboardButton('Запчасти и услуги', callback_data=select_cat.new('complects'))],
+#     [InlineKeyboardButton(text='Моя корзина', callback_data='myorders'),
+#     InlineKeyboardButton(text='Акции', callback_data='actions')],
+#     [InlineKeyboardButton(text='Адреса контакты', callback_data='adres'),
+#     InlineKeyboardButton(text='График работы', callback_data='time')],
+#     [InlineKeyboardButton('Отзывы полезные ссылки', callback_data='voices')],
+#     [InlineKeyboardButton('Написать оператору', url='https://t.me/VTGonlinebot')]
+# ])
 
 kb_client = InlineKeyboardMarkup(row_width=2, inline_keyboard=[
     [InlineKeyboardButton(text='Газы', callback_data=select_cat.new(cat='cities')),
-    InlineKeyboardButton('Баллоны для газов',
-                          callback_data=select_cat.new(cat='country'))],
-    [InlineKeyboardButton('Криогенные жидкости', url="https://wa.me/message/6KT7KF6BOGEJA1"),
-    InlineKeyboardButton('Оборудование',
+    InlineKeyboardButton('Криогенные жидкости', url="https://wa.me/message/6KT7KF6BOGEJA1")],
+    [InlineKeyboardButton('Баллоны для газов',
+                          callback_data=select_cat.new(cat='country')), 
+    InlineKeyboardButton('Запчасти и услуги', callback_data=select_cat.new('complects'))],
+    [InlineKeyboardButton('Оборудование',
                           callback_data=select_cat.new('eq_cat'))],
-    [InlineKeyboardButton('Запчасти и услуги', callback_data=select_cat.new('complects'))],
-    [InlineKeyboardButton(text='Моя корзина', callback_data='myorders'),
-    InlineKeyboardButton(text='Акции', callback_data='actions')],
+    [InlineKeyboardButton(text='Мой заказ', callback_data='myorders')],
     [InlineKeyboardButton(text='Адреса контакты', callback_data='adres'),
     InlineKeyboardButton(text='График работы', callback_data='time')],
-    [InlineKeyboardButton('Отзывы полезные ссылки', callback_data='voices')],
+    [InlineKeyboardButton(text='Акции', callback_data='actions'),
+     InlineKeyboardButton(f'Отзывы\nи ссылки', callback_data='voices')],
     [InlineKeyboardButton('Написать оператору', url='https://t.me/VTGonlinebot')]
 ])
 
