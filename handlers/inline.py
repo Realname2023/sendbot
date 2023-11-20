@@ -30,7 +30,7 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
                 await bot.send_photo(call.from_user.id, ret.photo,
                                      f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
                                      f'\nАренда: {ret.del_price} тенге за {ret.unit}'
-                                     f'в месяц с залогом по стоимости баллона (40000 тенге)',
+                                     f' в месяц с залогом по стоимости баллона (40000 тенге)',
                                      parse_mode=types.ParseMode.HTML,
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
                                          [InlineKeyboardButton('Аренда',

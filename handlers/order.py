@@ -30,9 +30,11 @@ async def create_order(user_id):
         strpos = ""
         comment = ""
         for ret in cur_orders:
-            if ret.arenda_time != 0 and ret.del_quantity == 0:
+            if ret.item_id in arenda_items:
+                pos = f"{ret.name}\n в количестве {ret.del_quantity} {ret.unit} на {ret.arenda_time} мес. с залогом по стоимости баллона (40000 тенге)\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
+            elif ret.item_id in arenda_eq and ret.del_quantity == 0:
                 pos = f"{ret.name} по договору\nв количестве {ret.quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
-            elif ret.arenda_time != 0 and ret.quantity == 0:
+            elif ret.item_id in arenda_eq and ret.quantity == 0:
                 pos = f"{ret.name}\n в количестве {ret.del_quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.del_quantity == 0:
                 pos = f"{ret.name}\n в количестве {ret.quantity} {ret.unit}\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
@@ -50,9 +52,10 @@ async def create_order(user_id):
         all_sum = f"Общая сумма Вашей покупки {asum} тенге\n"
         order = info_client + strpos + all_sum + f'Комментарий: {comment}'
         await bot.send_message(user_id,
-                               "Ваша заказ добавлен. Нажмите кнопку 'Отправить заказ'"
-                               "чтобы заказать товары, либо дополните заказ, используя остальные кнопки"
-                               ,
+                               'Ваша заказ добавлен. Нажмите кнопку "Отправить заказ", '
+            'чтобы заказать товары, либо дополните заказ, используя остальные кнопки. '
+            'Также, если у Вас изменился адрес доставки или другие данные, то укажите '
+            'это в комментарии (кнопка "Добавить комментарий к заказу")',
                                reply_markup=ReplyKeyboardRemove())
 
         await bot.send_message(user_id, order, parse_mode=types.ParseMode.HTML,
@@ -277,7 +280,7 @@ async def load_new_quantity(message: types.Message, state: FSMContext):
         "Количество товара успешно изменено", reply_markup=ReplyKeyboardRemove()
     )
     if item_id in arenda_eq or item_id in arenda_items:
-        await message.answer("Укажите новое время аренды", reply_markup=cancel_change_kb)
+        await message.answer("Укажите новое количество месяцев аренды", reply_markup=cancel_change_kb)
         await FSMOrder.new_arenda_time.set()
     else:
         await state.finish()
@@ -292,7 +295,7 @@ async def load_new_arenda_time(message: types.Message, state: FSMContext):
     try:
         answer = int(message.text)
     except ValueError:
-        await message.answer("Укажите время аренды в цифрах")
+        await message.answer("Укажите количество месяцев аренды в цифрах")
         return
     answer = message.text
     data = await state.get_data()
