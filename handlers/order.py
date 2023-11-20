@@ -112,11 +112,20 @@ async def send_order(call: types.CallbackQuery):
         else:
             quantity = ret.del_quantity
             price = ret.del_price
-        pos = {"PRODUCT_ID": ret.b_id,
+        if ret.item_id in arenda_eq or ret.item_id in arenda_items:
+            for i in range(quantity):
+                i = {"PRODUCT_ID": ret.b_id,
+                        "PRICE": float(price),
+                        "QUANTITY": ret.arenda_time,
+                        "MEASURE_CODE": 323
+                        }
+                poses.append(i)
+        else:
+            pos = {"PRODUCT_ID": ret.b_id,
                 "PRICE": float(price),
                 "QUANTITY": quantity
                 }
-        poses.append(pos)
+            poses.append(pos)
     parametr2 = {
         "id": lead_id,
         "rows": poses
