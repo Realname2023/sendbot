@@ -138,10 +138,10 @@ async def send_order(call: types.CallbackQuery):
         operator, order, reply_markup=InlineKeyboardMarkup().add(
             InlineKeyboardButton("Уточнить данные заказчика", callback_data=client_order.new(
                     user_id=user_id))))
-    await call.message.answer("Ваш заказ отправлен. Пожалуйста, нажмите кнопку 'Написать оператору подтвердить'"
-                              "для подтверждения заказа и напишите какое-нибудь сообщение",
+    await call.message.answer("Ваш заказ отправлен. Пожалуйста, нажмите кнопку 'Написать оператору/ подтвердить заказ'"
+                              " для подтверждения заказа или отправки Вашего сообщения",
                               reply_markup=InlineKeyboardMarkup().add(
-            InlineKeyboardButton("Написать оператору подтвердить", url='https://t.me/VTGonlinebot')))
+            InlineKeyboardButton("Написать оператору/ подтвердить заказ", url='https://t.me/VTGonlinebot')))
     await call.message.answer("==================================", reply_markup=kb_client)
     await commands.delete_cur_order(user_id)
     await call.answer('Send')

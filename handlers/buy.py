@@ -113,7 +113,7 @@ async def indicate_arenda_time(message: types.Message, state: FSMContext):
     await state.update_data(buy_arenda_time=answer)
     client = await commands.select_client(user_id)
     if client is None:
-        await message.answer("Укажите нименование Вашей организации  если Вы физ лицо, то напишите как к Вам обращаться")
+        await message.answer("Укажите наименование Вашей организации. Если Вы физ.лицо, то напишите, как к Вам обращаться.")
         await FSMClient.org_name.set()
     else:
         data = await state.get_data()
