@@ -16,17 +16,7 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
             ret = await commands.select_item(call_data)
             await bot.send_message(call.from_user.id,
                                    text='Наше предложение')
-            if ret.del_price == 0:
-                await bot.send_photo(call.from_user.id, ret.photo,
-                                     f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
-                                     f'\nЦена {ret.price} тенге за {ret.unit}',
-                                     parse_mode=types.ParseMode.HTML,
-                                     reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
-                                        [InlineKeyboardButton('Купить',callback_data=buy_item.new(item_id=ret.item_id,
-                                                                                                  price=ret.price))],
-                                         [InlineKeyboardButton('Назад', callback_data=select_cat.new(ret.city_back))]
-                                     ]))
-            elif ret.item_id in arenda_items:
+            if ret.item_id in arenda_items:
                 await bot.send_photo(call.from_user.id, ret.photo,
                                      f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
                                      f'\nАренда: {ret.del_price} тенге за {ret.unit}'
@@ -42,7 +32,7 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
                 await bot.send_photo(call.from_user.id, ret.photo,
                                      f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city}\n'
                                      f'Аренда по договору: {ret.price} тенге за {ret.unit} в месяц\n'
-                                     f'Аренда без договора {ret.del_price} тенге в месяц',
+                                     f'Аренда без договора {ret.del_price} тенге за {ret.unit} в месяц',
                                      parse_mode=types.ParseMode.HTML,
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
                                          [InlineKeyboardButton('Аренда по договору',
@@ -51,6 +41,16 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
                                          [InlineKeyboardButton('Аренда без договора',
                                                                callback_data=buy_item.new(item_id=ret.item_id,
                                                                                           price=ret.del_price))],
+                                         [InlineKeyboardButton('Назад', callback_data=select_cat.new(ret.city_back))]
+                                     ]))
+            elif ret.del_price == 0:
+                await bot.send_photo(call.from_user.id, ret.photo,
+                                     f'<b>{ret.name}</b>\n{ret.description}\nСклад: {ret.city} '
+                                     f'\nЦена {ret.price} тенге за {ret.unit}',
+                                     parse_mode=types.ParseMode.HTML,
+                                     reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
+                                        [InlineKeyboardButton('Купить',callback_data=buy_item.new(item_id=ret.item_id,
+                                                                                                  price=ret.price))],
                                          [InlineKeyboardButton('Назад', callback_data=select_cat.new(ret.city_back))]
                                      ]))
             else:
