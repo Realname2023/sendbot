@@ -35,7 +35,7 @@ async def select_category(call: types.CallbackQuery, callback_data: dict):
                                      f'Аренда без договора {ret.del_price} тенге за {ret.unit} в месяц',
                                      parse_mode=types.ParseMode.HTML,
                                      reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[
-                                         [InlineKeyboardButton('Аренда по договору',
+                                         [InlineKeyboardButton('Аренда к договору',
                                                                callback_data=buy_item.new(item_id=ret.item_id,
                                                                                           price=ret.price))],
                                          [InlineKeyboardButton('Аренда без договора',
