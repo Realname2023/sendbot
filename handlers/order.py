@@ -33,7 +33,7 @@ async def create_order(user_id):
             if ret.item_id in arenda_items:
                 pos = f"{ret.name}\n в количестве {ret.del_quantity} {ret.unit} на {ret.arenda_time} мес. с залогом по стоимости баллона (40000 тенге)\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.item_id in arenda_eq and ret.del_quantity == 0:
-                pos = f"{ret.name} по договору\nв количестве {ret.quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
+                pos = f"{ret.name} к договору поставки газов\nв количестве {ret.quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.item_id in arenda_eq and ret.quantity == 0:
                 pos = f"{ret.name}\n в количестве {ret.del_quantity} {ret.unit} на {ret.arenda_time} мес.\n по цене {ret.del_price} тенге\n на сумму {ret.sum} тенге\nСклад:{ret.city}\n-------------------\n"
             elif ret.del_quantity == 0:
