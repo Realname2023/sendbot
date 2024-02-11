@@ -6,8 +6,8 @@ from data_base.base_db import Client
 from handlers import quick_commands as commands
 from handlers.order import create_order
 from handlers.states import buy_item, FSMClient
-from keyboards import cancel_buy_kb, kb_client
-from aiogram.types import ReplyKeyboardRemove
+from keyboards import cancel_buy_kb, kb_client, phone_button_kb
+from aiogram.types import ReplyKeyboardRemove, ContentTypes
 
 
 # @dp.message_handler(state="*", commands=['отмена'])
@@ -155,21 +155,14 @@ async def indicate_org(message: types.Message, state: FSMContext):
 async def indicate_address(message: types.Message, state: FSMContext):
     address = message.text
     await state.update_data(address=address)
-    await message.answer("Укажите Ваш номер телефона. Номер телефона должен начинаться с 8"
-                         " или +7 и содержать 11 цифр")
+    await message.answer("Для обратной связи поделитесь контактом. Нажмите /Поделиться_контактом", 
+                         reply_markup=phone_button_kb)
     await FSMClient.phone.set()
 
 
 # @dp.message_handler(state=FSMClient.phone)
 async def indicate_phone(message: types.Message, state: FSMContext):
-    pat = r"[^0-9]"
-    answer = re.sub(pat, "", message.text)
-    pattern = r"^(8|7)[\d]{10}$"
-    if bool(re.match(pattern, answer)):
-        phone = answer
-    else:
-        await message.answer("Пожалуйста, укажите правильно Ваш номер телефона")
-        return
+    phone = message.contact.phone_number
     user_id = message.from_user.id
     user_name = message.from_user.username
     full_name = message.from_user.full_name
@@ -224,4 +217,4 @@ def register_handlers_buy(dp: Dispatcher):
     dp.register_message_handler(indicate_arenda_time, state=FSMClient.buy_arenda_time)
     dp.register_message_handler(indicate_org, state=FSMClient.org_name)
     dp.register_message_handler(indicate_address, state=FSMClient.address)
-    dp.register_message_handler(indicate_phone, state=FSMClient.phone)
+    dp.register_message_handler(indicate_phone, content_types=ContentTypes.CONTACT, state=FSMClient.phone)

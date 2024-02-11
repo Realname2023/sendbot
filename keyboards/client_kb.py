@@ -55,3 +55,7 @@ order_kb = InlineKeyboardMarkup(row_width=1, inline_keyboard=[
 buying_kb = InlineKeyboardMarkup(row_width=1, inline_keyboard=[
     [InlineKeyboardButton('Назад', callback_data='back')]])
 
+phone_button_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+phb = KeyboardButton('/Поделиться_контактом', request_contact=True)
+phone_button_kb.add(phb)
+
